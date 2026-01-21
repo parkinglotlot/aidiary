@@ -18,5 +18,6 @@ public class MemberShipDTO {
   private String verifyPassword;
   private String email;
   private LocalDate birthday;
+  private String fullName;
 
 }

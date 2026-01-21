@@ -57,7 +57,7 @@ public class UserService {
   
   //회원가입 시 유효성 검사
 
-  public ResponseEntity<CustomResponseEntity> verifyIdentification(MemberShipDTO member){
+  public ResponseEntity<CustomResponseEntity> verifyIdentification(MemberShipDTO member, HttpSession session){
 
     // OK일때
     HttpStatus goodStatus =HttpStatus.OK;
@@ -73,7 +73,13 @@ public class UserService {
     boolean emptyPassword = !(member.getPassword() == null || member.getPassword().isEmpty());
     boolean notPasswordMethod = false;
     boolean verifyPassword = false;
-    boolean emptyBirthday = false;
+
+    boolean emptyEmail = !(member.getEmail() == null || member.getEmail().isEmpty());
+    boolean isEmailVerify = (boolean) session.getAttribute("VERIFY_NUMBER");
+
+    boolean emptyFullName = !(member.getFullName() == null || member.getFullName().isEmpty());
+
+    boolean emptyBirthday = member.getBirthday() != null;
     boolean isBirthdayAge = false;
 
 
@@ -110,6 +116,8 @@ public class UserService {
       else notPasswordMethod = true;
     }
 
+
+
     if(notPasswordMethod){
       if(!member.getVerifyPassword().equals(member.getPassword()))
         throw new UserException("비밀번호가 일치하지 않습니다.");
@@ -117,10 +125,17 @@ public class UserService {
       else verifyPassword = true;
     }
 
-    if(member.getBirthday() == null)
+    if(!emptyEmail){
+      throw new UserException("이메일을 입력해주세요.");
+    }
+
+
+
+    if(!isEmailVerify) throw new UserException("이메일 인증을 진행해주세요.");
+
+    if(!emptyBirthday)
       throw new UserException("생년월일을 입력해주세요.");
       //log.info("생년월일을 입력해주세요.");
-    else emptyBirthday = true;
 
     if(emptyBirthday){
       if(!LocalDate.now().minusYears(18).isAfter(member.getBirthday()))
@@ -130,7 +145,7 @@ public class UserService {
     }
 
 
-    if(emptyLoginId && notLoginIdMethod && duplicateLoginId && emptyPassword  && notPasswordMethod && verifyPassword && emptyBirthday && isBirthdayAge) {
+    if(emptyLoginId && notLoginIdMethod && duplicateLoginId && emptyPassword  && notPasswordMethod && verifyPassword && emptyEmail && isEmailVerify && emptyFullName && emptyBirthday && isBirthdayAge) {
       valTest = true;
     };
 
@@ -151,6 +166,7 @@ public class UserService {
     user.setPassword(hashedPassword);
     user.setEmail(member.getEmail());
     user.setBirthday(member.getBirthday());
+    user.setFullName(member.getFullName());
     userRepository.save(user);
 
     Optional<User> isLoginUser = userRepository.findByLoginId(user.getLoginId());

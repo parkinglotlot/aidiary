@@ -1,22 +1,35 @@
 package com.aidiary.diary;
 
 import com.aidiary.user.dto.MemberShipDTO;
+import com.aidiary.user.dto.UserException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.SecurityConfig;
+import com.aidiary.user.util.UtilService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 @SpringBootTest
 class DiaryApplicationTests {
@@ -29,6 +42,13 @@ class DiaryApplicationTests {
 	@Autowired
 	private SecurityConfig securityConfig;
 
+	@Autowired
+	private JavaMailSender javaMailSender;
+
+	@Value("${spring.mail.username}")
+	private String emailFrom;
+  @Autowired
+  private HttpSession httpSession;
 
 
 	@Test
@@ -187,6 +207,185 @@ class DiaryApplicationTests {
 
 
 
+	}
+
+	@Transactional
+	@Test
+	void sendMailTest(){
+		//난수 생성
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < 8; i++){
+			int checkNum = (int)(Math.random() * 10);
+			char randomChar = (char)(checkNum + '0');
+			sb.append(randomChar + checkNum);
+		}
+
+		String verifyNumber = sb.toString();
+
+		//이메일 보내기
+		String title = "인증번호 메일 보냅니다.";
+
+		String content = "인증번호는" + "<br></br> <strong>" + verifyNumber + "</strong> <br></br>" + "입니다. 해당 인증 번호를 확인란에 입력해주세요.";
+
+		try {
+			MimeMessage mimeMailMessage = javaMailSender.createMimeMessage();
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMailMessage,true,"UTF-8");
+
+
+
+			mimeMessageHelper.setFrom(emailFrom);
+			mimeMessageHelper.setTo("gwang11167@naver.com");
+			mimeMessageHelper.setSubject(title);
+			mimeMessageHelper.setText(content, true);
+			javaMailSender.send(mimeMailMessage);
+
+		} catch (MessagingException e) {
+      throw new UserException("메일 발송에 실패했습니다.");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증번호 발송에 실패했습니다.");
+		}
+
+		// 이메일 보낸 뒤 인증번호 세션에 저장
+		HttpSession session = new HttpSession() {
+			@Override
+			public long getCreationTime() {
+				return 0;
+			}
+
+			@Override
+			public String getId() {
+				return "";
+			}
+
+			@Override
+			public long getLastAccessedTime() {
+				return 0;
+			}
+
+			@Override
+			public ServletContext getServletContext() {
+				return null;
+			}
+
+			@Override
+			public void setMaxInactiveInterval(int i) {
+
+			}
+
+			@Override
+			public int getMaxInactiveInterval() {
+				return 0;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration<String> getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public void invalidate() {
+
+			}
+
+			@Override
+			public boolean isNew() {
+				return false;
+			}
+		};
+
+		session.setAttribute("VERIFY_NUMBER",false);
+		session.setAttribute("verifyNumber",verifyNumber);
+
+
+	}
+
+	@Test
+	void sendMailTest2(){
+
+		HttpSession session = new HttpSession() {
+			@Override
+			public long getCreationTime() {
+				return 0;
+			}
+
+			@Override
+			public String getId() {
+				return "";
+			}
+
+			@Override
+			public long getLastAccessedTime() {
+				return 0;
+			}
+
+			@Override
+			public ServletContext getServletContext() {
+				return null;
+			}
+
+			@Override
+			public void setMaxInactiveInterval(int i) {
+
+			}
+
+			@Override
+			public int getMaxInactiveInterval() {
+				return 0;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration<String> getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public void invalidate() {
+
+			}
+
+			@Override
+			public boolean isNew() {
+				return false;
+			}
+		};
+
+		String verifyNumber = "";
+		if(session.getAttribute("verifyNumber") == verifyNumber){
+			log.info("맞습니다.");
+		}else{
+			log.info("틀립니다.");
+		}
 	}
 
 }
