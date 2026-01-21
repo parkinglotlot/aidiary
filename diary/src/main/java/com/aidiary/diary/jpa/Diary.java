@@ -36,7 +36,7 @@ public class Diary {
   private String aiAnalysis;
 
   @ManyToOne
-  @JoinColumn(name="user_id", nullable = false)
+  @JoinColumn(name="loginId", nullable = false)
   private User writer;
 
   public Diary(String title, String content, LocalDateTime date){

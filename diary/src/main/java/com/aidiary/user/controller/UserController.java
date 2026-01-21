@@ -10,17 +10,23 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
   private final UserService userService;
+
+  //메일 보내기
+  private final JavaMailSender javamailSender;
 
   // 로그인 시
   @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -48,9 +54,9 @@ public class UserController {
   //회원가입 검증 및 성공 시 user insert
   @PostMapping(value = "/valMembership", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  public ResponseEntity<CustomResponseEntity> valMembership(@RequestBody MemberShipDTO member){
+  public ResponseEntity<CustomResponseEntity> valMembership(@RequestBody MemberShipDTO member,HttpSession session){
 
-    ResponseEntity<CustomResponseEntity> returnResponse = userService.verifyIdentification(member);
+    ResponseEntity<CustomResponseEntity> returnResponse = userService.verifyIdentification(member,session);
 
     //회원가입 성공 시 member insert
     if (returnResponse.getStatusCode() == HttpStatus.OK) {
@@ -64,9 +70,11 @@ public class UserController {
     }
 
     //유저 insert 없이 응답만 반환
-    return userService.verifyIdentification(member);
+    return userService.verifyIdentification(member,session);
 
   }
+
+
 
 
 
