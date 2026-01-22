@@ -1,5 +1,8 @@
 package com.aidiary.diary;
 
+import com.aidiary.diary.dto.PageRequestDTO;
+import com.aidiary.diary.jpa.Diary;
+import com.aidiary.diary.mapper.DiaryMapper;
 import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.dto.UserException;
 import com.aidiary.user.jpa.User;
@@ -16,9 +19,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+import org.hibernate.grammars.hql.HqlParser.LocalDateTimeContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +54,9 @@ class DiaryApplicationTests {
 	private String emailFrom;
   @Autowired
   private HttpSession httpSession;
+
+	@Autowired
+	private DiaryMapper diaryMapper;
 
 
 	@Test
@@ -385,6 +393,28 @@ class DiaryApplicationTests {
 			log.info("맞습니다.");
 		}else{
 			log.info("틀립니다.");
+		}
+	}
+
+	@Test
+	@Transactional
+	void insertDiary(){
+//		PageRequestDTO pageRequestDTO = new PageRequestDTO().builder()
+//				.page(1)
+//				.pageSize(10)
+//				.build();
+
+		LocalDateTime localDateTime = LocalDateTime.now();
+		User youjin = userRepository.getUserByLoginId("ujin2597");
+
+		for(int i = 0; i < 11; i++){
+			Diary diary = new Diary("title" + i,"content" + i,localDateTime);
+			diary.setWriter(youjin);
+			boolean isInsert = diaryMapper.isInsertDiaryList(diary) != 0;
+			if (!isInsert){
+				log.info("실패");
+				break;
+			}
 		}
 	}
 

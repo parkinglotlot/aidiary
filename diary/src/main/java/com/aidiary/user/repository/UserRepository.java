@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   //회원가입 시 해당 정보를 바탕으로 정보 insert
   //boolean save(User user);
+
+  //아이디로 유저 찾기
+  User getUserByLoginId(String loginId);
 }
