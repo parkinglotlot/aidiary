@@ -7,15 +7,16 @@ import java.util.*;
 
 @Data
 @NoArgsConstructor
-public class PageResponseDTO {
+public class PageResponseDTO<T> {
 
-  private List<Object> list;
+  private List<T> list;
+  private PageRequestDTO pageRequestDTO;
   private Pagination pagination;
 
-  public PageResponseDTO(List<Object> list, Pagination pagination){
-
+  public PageResponseDTO(List<T> list, PageRequestDTO pageRequestDTO){
     this.list = list;
-    this.pagination = pagination;
+    this.pageRequestDTO = pageRequestDTO;
+    this.pagination = new Pagination(pageRequestDTO.getPage(), pageRequestDTO.getPageSize());
   }
 
 
