@@ -50,7 +50,7 @@ public class Pagination {
   private int nextPage;
 
   //총게시글 수와 현재 페이지를 이용
-  public Pagination(int totalCnt,int curPage){
+  public Pagination(int curPage,int totalCnt){
     // 페이징 처리 순서
     // 1. 총 페이지 수
     // 2. 총 블럭(range) 수

@@ -2,11 +2,10 @@ package com.aidiary.user.service;
 
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
-import com.aidiary.user.dto.UserException;
+import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.SecurityConfig;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -18,7 +17,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +25,12 @@ public class UserService {
   private final UserRepository userRepository;
   private final SecurityConfig securityConfig;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
+
+  //로그인 아이디로 유저 단순 반환
+  public User findUserById(String loginId){
+    return userRepository.getUserByLoginId(loginId);
+
+  }
 
 
   // 비밀번호 BCrypt 암호 인코딩
@@ -47,12 +51,13 @@ public class UserService {
   }
 
   //로그인 세션 만들기
-  public HttpSession loginSession(HttpServletRequest request, String loginId){
-    HttpSession session = request.getSession();
-
-    session.setAttribute("loginId",loginId);
-
-    return session;
+  public void loginSession(HttpServletRequest request, String loginId){
+    HttpSession session = request.getSession(true);
+    log.info("setlogin 중 : {}", loginId);
+    if(loginId != null) session.setAttribute("loginId",loginId);
+    String sessionId = session.getAttribute("loginId").toString();
+    log.info("setlogin 성공 : {}", sessionId);
+//    return session;
   }
   
   //회원가입 시 유효성 검사
@@ -84,13 +89,13 @@ public class UserService {
 
 
     if (!emptyLoginId)
-      throw new UserException("아이디를 입력해주세요.");
+      throw new CustomException("아이디를 입력해주세요.");
       // log.info("아이디를 입력해주세요.");
 
 
     if(emptyLoginId){
       if (!member.getLoginId().matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,12}$"))
-        throw new UserException("아이디는 8자에서 12자 이상 영문자와 숫자를 혼합한 형태여야 합니다.");
+        throw new CustomException("아이디는 8자에서 12자 이상 영문자와 숫자를 혼합한 형태여야 합니다.");
         //log.info("아이디는 8자에서 12자 이상 영문자와 숫자를 혼합한 형태여야 합니다.");
       else notLoginIdMethod = true;
     }
@@ -98,20 +103,20 @@ public class UserService {
     if(notLoginIdMethod){
       Optional<User> duplicateUser =  userRepository.findByLoginId(member.getLoginId());
       if(duplicateUser.isPresent())
-        throw new UserException("아이디가 중복됩니다.");
+        throw new CustomException("아이디가 중복됩니다.");
         //log.info("아이디가 중복됩니다.");
       else duplicateLoginId = true;
     }
 
 
     if (!emptyPassword)
-      throw new UserException("비밀번호를 입력하세요.");
+      throw new CustomException("비밀번호를 입력하세요.");
       //log.info("비밀번호를 입력하세요.");
 
 
     if (emptyPassword){
       if(!(member.getPassword().length() >= 4 && member.getPassword().length() <=8))
-        throw new UserException("비밀번호는 4자이상 8자이하여야 합니다.");
+        throw new CustomException("비밀번호는 4자이상 8자이하여야 합니다.");
         // log.info("비밀번호는 4자이상 8자이하여야 합니다.");
       else notPasswordMethod = true;
     }
@@ -120,26 +125,26 @@ public class UserService {
 
     if(notPasswordMethod){
       if(!member.getVerifyPassword().equals(member.getPassword()))
-        throw new UserException("비밀번호가 일치하지 않습니다.");
+        throw new CustomException("비밀번호가 일치하지 않습니다.");
         //log.info("비밀번호가 일치하지 않습니다.");
       else verifyPassword = true;
     }
 
     if(!emptyEmail){
-      throw new UserException("이메일을 입력해주세요.");
+      throw new CustomException("이메일을 입력해주세요.");
     }
 
 
 
-    if(!isEmailVerify) throw new UserException("이메일 인증을 진행해주세요.");
+    if(!isEmailVerify) throw new CustomException("이메일 인증을 진행해주세요.");
 
     if(!emptyBirthday)
-      throw new UserException("생년월일을 입력해주세요.");
+      throw new CustomException("생년월일을 입력해주세요.");
       //log.info("생년월일을 입력해주세요.");
 
     if(emptyBirthday){
       if(!LocalDate.now().minusYears(18).isAfter(member.getBirthday()))
-        throw new UserException("만 18세 이상만 가입 가능합니다.");
+        throw new CustomException("만 18세 이상만 가입 가능합니다.");
         //log.info("만 18세 이상만 가입 가능합니다.");
       else isBirthdayAge = true;
     }
@@ -149,7 +154,7 @@ public class UserService {
       valTest = true;
     };
 
-    if(valTest) return ResponseEntity.status(goodStatus).body(new CustomResponseEntity("회원가입이 완료되었습니다.",goodStatus.value(),null,goodStatus));
+    if(valTest) return ResponseEntity.status(goodStatus).body(new CustomResponseEntity("회원가입을 진행합니다.",goodStatus.value(),null,goodStatus));
 
     return ResponseEntity.status(badStatus).body(new CustomResponseEntity("회원가입 실패",badStatus.value(),null,badStatus));
 

@@ -4,35 +4,28 @@ import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.mapper.DiaryMapper;
 import com.aidiary.user.dto.MemberShipDTO;
-import com.aidiary.user.dto.UserException;
+import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.SecurityConfig;
-import com.aidiary.user.util.UtilService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
-import org.hibernate.grammars.hql.HqlParser.LocalDateTimeContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -250,7 +243,7 @@ class DiaryApplicationTests {
 			javaMailSender.send(mimeMailMessage);
 
 		} catch (MessagingException e) {
-      throw new UserException("메일 발송에 실패했습니다.");
+      throw new CustomException("메일 발송에 실패했습니다.");
 //			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증번호 발송에 실패했습니다.");
 		}
 
@@ -416,6 +409,20 @@ class DiaryApplicationTests {
 				break;
 			}
 		}
+	}
+
+	// diary 리스트 가져오기
+	@Test
+	void readDiaries(){
+		User user = userRepository.getUserByLoginId("ujin2597");
+		List<Diary> diaryList =  diaryMapper.selectRequestPaginationList(new PageRequestDTO(3,10),user);
+
+		for(Diary o : diaryList){
+
+			log.info("diary title : {}",o.getTitle());
+		}
+
+
 	}
 
 }

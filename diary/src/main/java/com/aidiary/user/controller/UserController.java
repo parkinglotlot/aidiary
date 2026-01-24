@@ -6,6 +6,7 @@ import com.aidiary.user.service.UserService;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +32,10 @@ public class UserController {
   // 로그인 시
   @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  public ResponseEntity<CustomResponseEntity> loginUser(String loginId, String passWord, HttpServletRequest request){
+  public ResponseEntity<CustomResponseEntity> loginUser(@RequestBody Map<String,String> loginForm , HttpServletRequest request){
+
+    String loginId = loginForm.get("loginId");
+    String passWord = loginForm.get("password");
 
     //로그인 검사
     boolean isLogin =  userService.existsByLoginIdAndPassword(loginId,passWord);
@@ -39,12 +43,12 @@ public class UserController {
     HttpSession session = request.getSession();
 
     if(isLogin){
-      session = userService.loginSession(request,loginId);
+      userService.loginSession(request,loginId);
     }
 
     HttpStatus status = isLogin ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
     String message = isLogin ? "Success" : "Fail";
-    Object data = isLogin ? session.getAttribute("loginId") : null;
+    Object data = isLogin ? loginId : null;
 
 
     return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),data,status));
