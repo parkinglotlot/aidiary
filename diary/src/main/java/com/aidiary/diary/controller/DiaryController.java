@@ -45,7 +45,7 @@ public class DiaryController {
 
     // 로그인 유저 validation
     log.info("sessionLoginId 확인 중:{}",curUser.getLoginId());
-    String sessionLoginId = request.getSession().getAttribute("loginId").toString();
+    String sessionLoginId = String.valueOf(request.getSession().getAttribute("loginId"));
     log.info("sessionLoginId 확인 중:{}",curUser.getLoginId() + sessionLoginId);
     commonService.validateUser(sessionLoginId,loginId);
 

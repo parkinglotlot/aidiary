@@ -46,7 +46,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
 	// Spring Security 의존성 (BCryptPasswordEncoder 포함)
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+//	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// 기타 필요한 의존성 (테스트 등)
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

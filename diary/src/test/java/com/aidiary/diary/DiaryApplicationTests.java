@@ -7,12 +7,16 @@ import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
-import com.aidiary.user.util.SecurityConfig;
+//import com.aidiary.user.util.SecurityConfig;
+import com.aidiary.user.service.UserService;
+import com.aidiary.user.util.Util;
+import com.aidiary.user.util.UtilService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import java.security.Key;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,10 +39,13 @@ class DiaryApplicationTests {
 	private static final Logger log = LoggerFactory.getLogger(DiaryApplicationTests.class);
 
 	@Autowired
-	private UserRepository userRepository;
+	private Util util;
 
 	@Autowired
-	private SecurityConfig securityConfig;
+	private UserRepository userRepository;
+
+//	@Autowired
+//	private SecurityConfig securityConfig;
 
 	@Autowired
 	private JavaMailSender javaMailSender;
@@ -81,9 +88,18 @@ class DiaryApplicationTests {
 	}
 
 	@Test
-	void Test3(){
-		String hashedPassword = securityConfig.passwordEncoder().encode("1234");
-		log.info("비밀번호 : {}",hashedPassword);
+	void Test3() throws Exception {
+//		Key keySpec = util.getAESKey();
+
+
+		String encrypt = util.encAES("1234");
+		String decrypt = util.deAES(encrypt);
+
+		log.info("암호화:{}", encrypt);
+		log.info("복호화:{}",decrypt);
+
+//		String hashedPassword = securityConfig.passwordEncoder().encode("1234");
+//		log.info("비밀번호 : {}",hashedPassword);
 	}
 
 
