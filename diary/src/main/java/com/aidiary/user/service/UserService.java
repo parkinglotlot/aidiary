@@ -5,12 +5,19 @@ import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
-import com.aidiary.user.util.SecurityConfig;
+//import com.aidiary.user.util.SecurityConfig;
+import com.aidiary.user.util.Util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.time.LocalDate;
 import java.util.Optional;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -23,7 +30,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
   private final UserRepository userRepository;
-  private final SecurityConfig securityConfig;
+  private final Util util;
+//  private final SecurityConfig securityConfig;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
   //로그인 아이디로 유저 단순 반환
@@ -33,16 +41,19 @@ public class UserService {
   }
 
 
-  // 비밀번호 BCrypt 암호 인코딩
-  private String incodePassword(String password){
-    if(password != null) return securityConfig.passwordEncoder().encode(password);
-    return null;
-  }
+
+
+  // 비밀번호 BCrypt 암호 인코딩 -> 다른 암호화/복호화 로직 사용
+//  private String incodePassword(String password){
+//
+////    if(password != null) return securityConfig.passwordEncoder().encode(password);
+//    return null;
+//  }
 
   // 로그인 아이디와 비밀번호 비교
-  public boolean existsByLoginIdAndPassword(String loginId,String password){
-
-    String hashedPassword = this.incodePassword(password);
+  public boolean existsByLoginIdAndPassword(String loginId,String password)throws Exception{
+    //암호화
+    String hashedPassword = util.encAES(password);
 
     if(userRepository.findByLoginIdAndPassword(loginId,hashedPassword) != null){
       return true;
@@ -163,11 +174,12 @@ public class UserService {
 
   // 회원가입 시 아이디/비번 insert
   @Transactional
-  public boolean insertMember(MemberShipDTO member){
+  public boolean insertMember(MemberShipDTO member) throws Exception {
 
     User user = new User();
     user.setLoginId(member.getLoginId());
-    String hashedPassword = this.incodePassword(member.getPassword());
+    //암호화
+    String hashedPassword = util.encAES(member.getPassword());
     user.setPassword(hashedPassword);
     user.setEmail(member.getEmail());
     user.setBirthday(member.getBirthday());

@@ -1,12 +1,16 @@
 package com.aidiary.user.controller;
 
+import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.service.UserService;
+import com.aidiary.user.util.UtilService;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
+import jdk.jshell.spi.ExecutionControl;
+import jdk.jshell.spi.ExecutionControl.UserException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +30,7 @@ public class UserController {
 
   private final UserService userService;
 
+
   //메일 보내기
   private final JavaMailSender javamailSender;
 
@@ -38,7 +43,14 @@ public class UserController {
     String passWord = loginForm.get("password");
 
     //로그인 검사
-    boolean isLogin =  userService.existsByLoginIdAndPassword(loginId,passWord);
+    boolean isLogin = false;
+    try {
+      isLogin = userService.existsByLoginIdAndPassword(loginId,passWord);
+    } catch (Exception e) {
+      HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+      CustomResponseEntity customResponseEntity = new CustomResponseEntity(status.getReasonPhrase(),status.value(),null,status);
+      throw new CustomException(customResponseEntity,status);
+    }
 
     HttpSession session = request.getSession();
 
@@ -64,7 +76,14 @@ public class UserController {
 
     //회원가입 성공 시 member insert
     if (returnResponse.getStatusCode() == HttpStatus.OK) {
-      boolean insertUser = userService.insertMember(member); // 유저 insert
+      boolean insertUser = false; // 유저 insert
+      try {
+        insertUser = userService.insertMember(member);
+      } catch (Exception e) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        CustomResponseEntity customResponseEntity = new CustomResponseEntity(status.getReasonPhrase(),status.value(),null,status);
+        throw new CustomException(customResponseEntity,status);
+      }
 
       //유저 insert 실패시 진행할 것
       HttpStatus badStatus = HttpStatus.INTERNAL_SERVER_ERROR;
