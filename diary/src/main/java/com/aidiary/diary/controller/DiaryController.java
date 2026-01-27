@@ -2,11 +2,13 @@ package com.aidiary.diary.controller;
 
 import com.aidiary.common.service.CommonService;
 import com.aidiary.diary.dto.PageResponseDTO;
+import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.service.DiaryService;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,6 +68,31 @@ public class DiaryController {
         .build();
 
     return ResponseEntity.ok(customResponseEntity);
+  }
+
+  //다이어리 생성
+  //로그인 유저에 속한 다이어리를 생성한다.
+  @ResponseBody
+  @PostMapping("/create")
+  public ResponseEntity<CustomResponseEntity> createDiary(HttpServletRequest request, @RequestBody
+      Diary diary, @RequestParam String loginId){
+
+    HttpSession session =  request.getSession();
+    String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
+
+    // 권한 확인
+    commonService.validateUser(sessionLoginId,loginId);
+
+    //해당 유저 가져오기
+    User curUser = userService.findUserById(loginId);
+
+
+    int insertDiary =  diaryService.insertDiary(diary,curUser);
+
+    HttpStatus httpStatusOK = HttpStatus.OK;
+    CustomResponseEntity customResponseEntity = new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),insertDiary,httpStatusOK);
+
+    return new ResponseEntity<>(customResponseEntity,httpStatusOK);
   }
 
 
