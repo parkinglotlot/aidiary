@@ -1,6 +1,7 @@
 package com.aidiary.diary.jpa;
 
 import com.aidiary.user.jpa.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,13 +35,14 @@ public class Diary {
   private String content;
 
   @Column
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
   @Column
   private String aiAnalysis;
 
   @ManyToOne
-  @JoinColumn(name="loginId", nullable = false)
+  @JoinColumn(name="writer_id", nullable = false)
   private User writer;
 
   public Diary(String title, String content, LocalDateTime date){

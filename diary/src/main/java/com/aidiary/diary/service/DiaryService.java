@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -39,6 +40,25 @@ public class DiaryService {
     }
   }
 
+  // 생성 : 유저에 속한 다이어리 등록
+  @Transactional(rollbackFor = Exception.class)
+  public int insertDiary(Diary diary,User user){
 
+    HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
+    //다이어리에 유저 세팅
+    diary.setWriter(user);
+
+    int insertResult = 0;
+
+    try {
+      insertResult = diaryMapper.isInsertDiaryList(diary);
+    } catch (Exception e) {
+      throw new CustomException(new CustomResponseEntity(httpStatus.getReasonPhrase(), httpStatus.value(),null, httpStatus),httpStatus);
+    }
+
+    if(insertResult < 1) throw new CustomException(new CustomResponseEntity(httpStatus.getReasonPhrase(), httpStatus.value(),null, httpStatus),httpStatus);
+
+    return insertResult;
+  }
 }
