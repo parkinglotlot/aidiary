@@ -41,18 +41,19 @@ public class DiaryController {
   // 페이징 적용
   @ResponseBody
   @GetMapping("/readCustom")
-  public ResponseEntity<CustomResponseEntity> readDiary(HttpServletRequest request,@RequestParam String loginId,
+  public ResponseEntity<CustomResponseEntity> readDiary(HttpServletRequest request,
       @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize) {
 
 //    log.info("로그1");
-    User curUser = userService.findUserById(loginId);
 
     // 로그인 유저 validation
-    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId());
-    String sessionLoginId = String.valueOf(request.getSession().getAttribute("loginId"));
-    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId() + sessionLoginId);
-    commonService.validateUser(sessionLoginId,loginId);
+//    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId());
+//    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId() + sessionLoginId);
+//    commonService.validateUser(sessionLoginId,loginId);
 
+    String sessionLoginId = String.valueOf(request.getSession().getAttribute("loginId"));
+
+    User curUser = commonService.validateUserEmpty(sessionLoginId);
 
     // 프론트에 반환할 (리스트를 포함한) paginationDTO 생성 (서비스단에서 에러 핸들링 포함)
     PageResponseDTO pageResponseDTO =  diaryService.returnDiaries(curPage,pageSize,curUser);
@@ -75,17 +76,17 @@ public class DiaryController {
   @ResponseBody
   @PostMapping("/create")
   public ResponseEntity<CustomResponseEntity> createDiary(HttpServletRequest request, @RequestBody
-      Diary diary, @RequestParam String loginId){
+      Diary diary){
 
     HttpSession session =  request.getSession();
     String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
 
     // 권한 확인
-    commonService.validateUser(sessionLoginId,loginId);
+//    commonService.validateUser(sessionLoginId,loginId);
 
     //해당 유저 가져오기
-    User curUser = userService.findUserById(loginId);
-
+    commonService.validateUserEmpty(sessionLoginId);
+    User curUser = commonService.validateUserEmpty(sessionLoginId);
 
     int insertDiary =  diaryService.insertDiary(diary,curUser);
 
