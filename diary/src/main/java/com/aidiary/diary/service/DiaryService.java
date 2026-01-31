@@ -9,6 +9,7 @@ import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import java.util.Collections;
 import java.util.List;
+import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -61,4 +62,30 @@ public class DiaryService {
 
     return insertResult;
   }
+
+
+  // 수정 : 유저에 속한 다이어리 수정
+  public boolean updateDiary(Diary diary,User user) throws AuthenticationException {
+    boolean result = false;
+
+    if(user == null){
+      // 검증
+      throw new AuthenticationException();
+    }
+
+    try {
+      int updateNum = diaryMapper.updateDiary(diary,user);
+
+      if(updateNum == 1) result = true;
+
+    } catch (Exception e) {
+      CustomResponseEntity customResponseEntity = new CustomResponseEntity();
+      HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new CustomException(customResponseEntity,serverError);
+    }
+
+    return result;
+  }
 }
+
+
