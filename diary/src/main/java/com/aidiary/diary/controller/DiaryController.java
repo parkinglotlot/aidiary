@@ -4,11 +4,13 @@ import com.aidiary.common.service.CommonService;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.service.DiaryService;
+import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +45,8 @@ public class DiaryController {
   @ResponseBody
   @GetMapping("/readCustom")
   public ResponseEntity<CustomResponseEntity> readDiary(HttpServletRequest request,
-      @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize) {
+      @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize)
+      throws AuthenticationException {
 
 //    log.info("로그1");
 
@@ -76,7 +80,7 @@ public class DiaryController {
   @ResponseBody
   @PostMapping("/create")
   public ResponseEntity<CustomResponseEntity> createDiary(HttpServletRequest request, @RequestBody
-      Diary diary){
+      Diary diary) throws AuthenticationException {
 
     HttpSession session =  request.getSession();
     String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
@@ -94,6 +98,33 @@ public class DiaryController {
     CustomResponseEntity customResponseEntity = new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),insertDiary,httpStatusOK);
 
     return new ResponseEntity<>(customResponseEntity,httpStatusOK);
+  }
+
+  //로그인 유저가 속하고, 선택한 다이어리 수정
+  @ResponseBody
+  @PutMapping("/modify")
+  public ResponseEntity<CustomResponseEntity> modifyDiary(@RequestBody Diary diary, HttpServletRequest request)
+      throws AuthenticationException {
+    String sessionId = "";
+    User user = null;
+    sessionId = (String)request.getAttribute("loginId");
+
+    user = commonService.validateUserEmpty(sessionId);
+
+    boolean result = false;
+
+    try {
+      result = diaryService.updateDiary(diary,user);
+    } catch (Exception e) {
+      throw new RuntimeException();
+    }
+
+    if(result){
+      return new ResponseEntity<>(new CustomResponseEntity(),HttpStatus.OK);
+    }else {
+      return new ResponseEntity<>(new CustomResponseEntity(), HttpStatus.BAD_REQUEST);
+    }
+
   }
 
 

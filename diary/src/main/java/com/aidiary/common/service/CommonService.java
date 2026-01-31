@@ -7,6 +7,7 @@ import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class CommonService {
     if(!isLoginUser) throw new CustomException(customResponse,httpStatusBadRequest);
   }
 
-  public User validateUserEmpty(String sessionLoginId){
+  public User validateUserEmpty(String sessionLoginId) throws AuthenticationException {
 
     // 로그인 유저 존재 확인
     User user = userRepository.getUserByLoginId(sessionLoginId);
@@ -52,10 +53,10 @@ public class CommonService {
     HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
 
     //CustomResponseEntity 반환
-    CustomResponseEntity customResponse = new CustomResponseEntity();
+//    CustomResponseEntity customResponse = new CustomResponseEntity();
 
     if(user == null){
-      throw new CustomException(customResponse,httpStatusBadRequest);
+      throw new AuthenticationException();
     }
 
     return user;

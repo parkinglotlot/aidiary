@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface DiaryMapper {
@@ -17,6 +18,8 @@ public interface DiaryMapper {
   @Select("SELECT id,content,date,title,ai_analysis,writer_id,user_id,login_id from diary WHERE writer_id = #{user.id} limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}")
   List<Diary> selectRequestPaginationList(PageRequestDTO pageRequestDTO, User user);
 
+  @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")
+  int updateDiary(Diary diary, User user);
 
 
 }

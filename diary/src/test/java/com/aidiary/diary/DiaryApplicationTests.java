@@ -3,6 +3,8 @@ package com.aidiary.diary;
 import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.mapper.DiaryMapper;
+import com.aidiary.diary.mapper.DiaryRepository;
+import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
@@ -30,6 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -43,6 +46,9 @@ class DiaryApplicationTests {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private DiaryRepository diaryRepository;
 
 //	@Autowired
 //	private SecurityConfig securityConfig;
@@ -438,7 +444,38 @@ class DiaryApplicationTests {
 			log.info("diary title : {}",o.getTitle());
 		}
 
-
 	}
+
+	//diary 업데이트
+	@Test
+	@org.springframework.transaction.annotation.Transactional
+	void updateDiary(){
+		Optional<User> user = userRepository.findByLoginId("ujin2597");
+		Diary diary = diaryRepository.getDiaryById(1L);
+
+		User getUser = user.orElse(null);
+
+		diary.setContent(diary.getContent() + "업데이트");
+		diary.setTitle(diary.getTitle() + "업데이트");
+
+		int updateNum = diaryMapper.updateDiary(diary,getUser);
+    try {
+      if(updateNum != 0){
+        log.info("업데이트 성공");
+      } else{
+        log.info("실패");
+      }
+    } catch (Exception e) {
+			HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+			CustomResponseEntity customResponseEntity = new CustomResponseEntity().builder()
+					.message(httpStatus.getReasonPhrase())
+					.code(httpStatus.value())
+					.httpStatus(httpStatus)
+					.build();
+      throw new CustomException(customResponseEntity,httpStatus);
+    }
+
+
+  }
 
 }
