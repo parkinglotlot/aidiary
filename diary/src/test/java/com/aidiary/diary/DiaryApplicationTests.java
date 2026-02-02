@@ -474,8 +474,8 @@ class DiaryApplicationTests {
 					.build();
       throw new CustomException(customResponseEntity,httpStatus);
     }
-
-
   }
+
+	
 
 }

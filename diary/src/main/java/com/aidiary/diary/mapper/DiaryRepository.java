@@ -9,6 +9,7 @@ public interface DiaryRepository extends JpaRepository<Diary,Long> {
 
   Diary getDiaryById(Long id);
 
+
   int deleteDiaryById(Long id);
 
 }
