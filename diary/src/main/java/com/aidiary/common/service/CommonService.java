@@ -11,6 +11,12 @@ import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.web.servlet.View;
+
+import org.springframework.validation.Errors;
 
 @Service
 @AllArgsConstructor
@@ -19,7 +25,10 @@ public class CommonService {
   private final UserRepository userRepository;
   private final DiaryMapper diaryMapper;
 
-    // 로그인 유저 존재 확인 및 현재 로그인 유저가 해당 아이디의 유저인지 확인 (Validation)
+  private final Logger log = LoggerFactory.getLogger(getClass());
+  private final View error;
+
+  // 로그인 유저 존재 확인 및 현재 로그인 유저가 해당 아이디의 유저인지 확인 (Validation)
     // 이건 다음에  필요할 때 사용
     public void validateUser(String sessionLoginId,String loginId){
 
@@ -45,19 +54,27 @@ public class CommonService {
 
   public User validateUserEmpty(String sessionLoginId) throws AuthenticationException {
 
+
+
     // 로그인 유저 존재 확인
+    log.info("log2:{}",error);
     User user = userRepository.getUserByLoginId(sessionLoginId);
+    log.info("log3:{}",error);
 
     //httpstatus 세팅
-    HttpStatus httpStatusBadRequest = HttpStatus.BAD_REQUEST;
-    HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
+//    HttpStatus httpStatusBadRequest = HttpStatus.BAD_REQUEST;
+//    HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
 
-    //CustomResponseEntity 반환
-//    CustomResponseEntity customResponse = new CustomResponseEntity();
+    log.info("log4:{}",error);
+
+    log.info("user:{}",user);
+    log.info("sessionLoginId:{}",sessionLoginId);
 
     if(user == null){
       throw new AuthenticationException();
     }
+
+    log.info("log6:{}",error);
 
     return user;
 
