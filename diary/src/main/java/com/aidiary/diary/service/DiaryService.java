@@ -4,6 +4,7 @@ import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.mapper.DiaryMapper;
+import com.aidiary.diary.mapper.DiaryRepository;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DiaryService {
 
   private final DiaryMapper diaryMapper;
+  private final DiaryRepository diaryRepository;
 
   // 조회 : 유저에 맞는 다이어리 리스트 조회
   public PageResponseDTO returnDiaries(int curPage, int pageSize, User user) {
@@ -65,6 +67,7 @@ public class DiaryService {
 
 
   // 수정 : 유저에 속한 다이어리 수정
+  @Transactional(rollbackFor = Exception.class)
   public boolean updateDiary(Diary diary,User user) throws AuthenticationException {
     boolean result = false;
 
@@ -83,6 +86,28 @@ public class DiaryService {
       HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
       throw new CustomException(customResponseEntity,serverError);
     }
+
+    return result;
+  }
+
+  // 삭제 : 유저에 속한 다이어리 삭제
+  @Transactional(rollbackFor = Exception.class)
+  public boolean deleteDiary(User user, Diary diary) throws AuthenticationException {
+    boolean result = false;
+
+    if(user == null){
+      throw new AuthenticationException();
+    }
+
+    int deleteResult = 0;
+
+    try {
+      deleteResult = diaryRepository.deleteDiaryById(diary.getId());
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    if(deleteResult == 1) result = true;
 
     return result;
   }

@@ -17,14 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.slf4j.Logger;
+import org.springframework.web.servlet.View;
 
 @AllArgsConstructor
 @Controller
@@ -37,6 +40,7 @@ public class DiaryController {
   private final DiaryService diaryService;
   private final UserService userService;
   private final CommonService commonService;
+  private final View error;
 
 
   // 다이어리 조회
@@ -103,29 +107,70 @@ public class DiaryController {
   //로그인 유저가 속하고, 선택한 다이어리 수정
   @ResponseBody
   @PutMapping("/modify")
-  public ResponseEntity<CustomResponseEntity> modifyDiary(@RequestBody Diary diary, HttpServletRequest request)
+  public ResponseEntity<CustomResponseEntity> modifyDiary(HttpServletRequest request,@RequestBody Diary diary)
       throws AuthenticationException {
     String sessionId = "";
     User user = null;
-    sessionId = (String)request.getAttribute("loginId");
 
+    HttpSession session = request.getSession(true);
+    sessionId = (String) session.getAttribute("loginId");
+
+//    log.info("log1 : {}",error);
+//    log.info("sessionId : {}",sessionId);
     user = commonService.validateUserEmpty(sessionId);
+
 
     boolean result = false;
 
+
     try {
+
       result = diaryService.updateDiary(diary,user);
+
     } catch (Exception e) {
       throw new RuntimeException();
     }
 
+    HttpStatus httpStatusOK = HttpStatus.OK;
+    HttpStatus httpStatusBad = HttpStatus.BAD_REQUEST;
+
     if(result){
-      return new ResponseEntity<>(new CustomResponseEntity(),HttpStatus.OK);
+      return new ResponseEntity<>(new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),result,httpStatusOK),httpStatusOK);
     }else {
-      return new ResponseEntity<>(new CustomResponseEntity(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(new CustomResponseEntity(httpStatusBad.getReasonPhrase(),httpStatusBad.value(),null,httpStatusBad), httpStatusBad);
     }
 
   }
+
+  // 로그인 유저가 택한 다이어리 삭제
+  @ResponseBody
+  @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
+  public ResponseEntity<CustomResponseEntity> deleteDiary(HttpServletRequest request, @RequestBody Diary diary)
+      throws AuthenticationException {
+
+    log.info("디버깅:{}",diary);
+
+    // 유저 validation
+    HttpSession session = request.getSession(true);
+    String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
+    User user =  commonService.validateUserEmpty(sessionLoginId);
+
+    boolean deleteResult = false;
+
+
+    deleteResult =  diaryService.deleteDiary(user,diary);
+
+    HttpStatus status = null;
+
+    status = deleteResult ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+
+    CustomResponseEntity customResponseEntity = new CustomResponseEntity(status.getReasonPhrase(),status.value(), deleteResult,status);
+
+    return new ResponseEntity<>(customResponseEntity,status);
+
+  }
+
 
 
 }

@@ -476,6 +476,22 @@ class DiaryApplicationTests {
     }
   }
 
-	
+	@Test
+	@org.springframework.transaction.annotation.Transactional
+	public void deleteDiaryTest(){
+
+		Diary diary =  diaryRepository.getDiaryById(1L);
+
+		int deleteResult = diaryRepository.deleteDiaryById(diary.getId());
+
+		if(deleteResult != 0){
+			log.info("성공:{},diary 내용:{}",deleteResult,  diary.getTitle());
+		}else{
+			log.info("실패:{},diary 내용:{}",deleteResult,  diary.getTitle());
+		}
+
+	}
+
+
 
 }
