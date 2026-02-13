@@ -51,6 +51,13 @@ dependencies {
 	// 기타 필요한 의존성 (테스트 등)
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// ai api
+	// 웹 프로젝트용 기본 의존성 (RestTemplate)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+ 
+	// 개발 중 자동 재시작 등을 위한 의존성 (선택)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
 
 }
 
