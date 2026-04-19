@@ -37,3 +37,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# 민감 정보 파일
+application.properties
+application.yml

@@ -5,15 +5,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 
-@AllArgsConstructor
+
 @Service
 public class OpenAiService {
 
   private final RestClient restClient;
+
+  @Value("${ai.openai.base-url}")
+  private String baseUrl;
+
+  @Value("${ai.openai.model}")
+  private String model;
+
+  @Value("${ai.openai.api-key}")
+  private String apiKey;
+
+  public OpenAiService (){
+    this.restClient = RestClient.builder()
+        .baseUrl(baseUrl)
+        .defaultHeader("Content-Type", "application/json")
+        .defaultHeader("Authorization", "Bearer" + apiKey)
+        .build();
+  }
 
   public String callGPT(String prompt){
 
