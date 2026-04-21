@@ -111,6 +111,11 @@ public class DiaryService {
 
     return result;
   }
+
+  // 다이어리 AI 분석 내용 저장
+  public int setAiDiary(Diary diary,User user){
+    return diaryMapper.updateAiAnalysis(diary,user);
+  }
 }
 
 

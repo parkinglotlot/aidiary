@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>login</title>
+   <link rel="stylesheet" th:href="@{/css/login-style.css}">
+</head>
+<body>
+
+<div class="login-wrapper">
+        <div class="login-box">
+            <div class="login-header">
+                <h2>AI Diary</h2>
+                <p>서비스 이용을 위해 로그인해주세요.</p>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div th:if="${param.error}" class="error-msg">
+                    아이디 또는 비밀번호가 일치하지 않습니다.
+                </div>
+
+                <div class="input-group">
+                    <label for="username">아이디</label>
+                    <input type="text" id="username" name="username" placeholder="Username" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                </div>
+
+                <div class="options">
+                    <label><input type="checkbox" name="remember-me"> 로그인 유지</label>
+                    <a href="#">비밀번호 찾기</a>
+                </div>
+
+                <button type="submit" class="login-btn">로그인</button>
+            </form>
+
+            <div class="login-footer">
+                <span>계정이 없으신가요? <a href="#">회원가입</a></span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

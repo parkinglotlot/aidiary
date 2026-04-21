@@ -24,5 +24,8 @@ public interface DiaryMapper {
   @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")
   int updateDiary(Diary diary, User user);
 
+  @Update("update diary set ai_analysis = #{diary.aiAnalysis} where writer_id = #{user.id} and id = #{diary.id}")
+  int updateAiAnalysis(Diary diary, User user);
+
 
 }
