@@ -42,6 +42,10 @@ public class DiaryController {
   private final CommonService commonService;
   private final View error;
 
+  @GetMapping("/goHome")
+  public String goMain(){
+    return "main";
+  }
 
   // 다이어리 조회
   // 로그인 유저에 맞는 다이어리 목록을 조회한다.
