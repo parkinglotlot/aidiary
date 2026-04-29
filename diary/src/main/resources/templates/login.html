@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
-    <script src="static/javascript/login.js"></script>
+    <script th:src="@{/static/javascript/login.js}"></script>
     <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
@@ -25,8 +25,8 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="username">아이디</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required>
+                    <label for="loginId">아이디</label>
+                    <input type="text" id="loginId" name="loginId" placeholder="loginId" required>
                 </div>
 
                 <div class="input-group">

@@ -12,6 +12,9 @@ import java.util.Map;
 import jdk.jshell.spi.ExecutionControl;
 import jdk.jshell.spi.ExecutionControl.UserException;
 import lombok.AllArgsConstructor;
+import org.slf4j.ILoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
   private final UserService userService;
+  private final Logger log = LoggerFactory.getLogger(UserController.class);
 
 
   //메일 보내기
@@ -61,7 +65,7 @@ public class UserController {
     HttpStatus status = isLogin ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
     String message = isLogin ? "Success" : "Fail";
     Object data = isLogin ? loginId : null;
-
+    log.info("data:{}",data);
 
     return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),data,status));
 

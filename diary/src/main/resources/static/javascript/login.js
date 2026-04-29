@@ -3,21 +3,24 @@ function login(loginId,password){
     $.ajax({
         type: "POST",
         url: "/user/login",
-        body : {
+        data : {
             loginId : loginId,
             password : password
         },
-        success: function(data){
+        success : function(data){
             console.log(data);
             alert("로그인 완료");
-            location.href = "diary/goHome"
+            location.href = "/diary/goHome"
         },
-        fail:function(data){
+        error : function(data){
             console.log(data);
         }
            })
+    return null;
 }
 
 let loginBtn = document.getElementById("loginBtn");
+let loginId = document.getElementById("loginId");
+let password = document.getElementById("password");
 
-loginBtn.addEventListener("click",login);
+loginBtn.addEventListener("click",login(loginId,password));
