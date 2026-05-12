@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="adminLayout" id="layout-wrapper">
+<div th:fragment="adminLayout(content)" id="layout-wrapper">
   <link rel="stylesheet" th:href="@{/css/layout-style.css}">
     <header class="topbar">
         <div class="logo">AI Diary</div>
         <div class="user-profile">
             <span>Welcome, Developer</span>
-            <button class="logout-btn">Logout</button>
+            <button class="logout-btn" id = "logOutBtn">Logout</button>
         </div>
     </header>
 
     <div class="main-container">
         <nav class="sidebar">
             <ul class="menu-list">
-                <li class="menu-item active">일기 목록</li>
+                <li class="menu-item active" th:href="@{/main.html}">일기 목록</li>
                 <li class="menu-item">시스템 관리
                     <ul class="sub-menu">
                         <li>사용자 권한</li>
@@ -24,12 +24,14 @@
             </ul>
         </nav>
 
-<!--        <main class="content">-->
-<!--            <div class="card">-->
+        <main class="content">
+            <div class="card">
+                <th:block th:replace="${content}"></th:block>
 <!--                <h2>Layout Tree Analysis</h2>-->
 <!--                <p>여기에 실제 분석 결과나 테이블이 들어갑니다.</p>-->
-<!--            </div>-->
-<!--        </main>-->
+            </div>
+        </main>
     </div>
+    <script th:src = "@{/javascript/layout.js}"></script>
 </div>
 </html>

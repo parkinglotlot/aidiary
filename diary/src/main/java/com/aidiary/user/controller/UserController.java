@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,7 +46,7 @@ public class UserController {
 
     String loginId = loginForm.get("loginId");
     String passWord = loginForm.get("password");
-
+    log.info("loginId:{}",loginId);
     //로그인 검사
     boolean isLogin = false;
     try {
@@ -101,7 +102,22 @@ public class UserController {
 
   }
 
+  //로그아웃
+  @PostMapping(value = "/logOut")
+  public ResponseEntity<CustomResponseEntity> logoutMember(HttpServletRequest request){
+    HttpSession session = request.getSession();
 
+    try {
+      session.invalidate();
+    } catch (Exception e) {
+      HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new CustomException(new CustomResponseEntity(status.getReasonPhrase(),status.hashCode(),null,status),status);
+    }
+    HttpStatus statusOK = HttpStatus.OK;
+    String loginId = (String)session.getAttribute("loginId");
+    return new ResponseEntity<CustomResponseEntity>(new CustomResponseEntity(statusOK.getReasonPhrase(),statusOK.hashCode(),loginId,statusOK),statusOK);
+
+  }
 
 
 
