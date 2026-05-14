@@ -53,8 +53,7 @@ public class DiaryController {
   @ResponseBody
   @GetMapping("/readCustom")
   public ResponseEntity<CustomResponseEntity> readDiary(HttpServletRequest request,
-      @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize,
-      Errors errors)
+      @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize)
       throws AuthenticationException {
 
 //    log.info("로그1");
@@ -69,7 +68,7 @@ public class DiaryController {
     User curUser = commonService.validateUserEmpty(sessionLoginId);
 
     // 프론트에 반환할 (리스트를 포함한) paginationDTO 생성 (서비스단에서 에러 핸들링 포함)
-    log.info("error:{}",errors);
+
     PageResponseDTO pageResponseDTO =  diaryService.returnDiaries(curPage,pageSize,curUser);
     log.info("pageResponseDTO:{}",pageResponseDTO);
     // 최종 상태 반환

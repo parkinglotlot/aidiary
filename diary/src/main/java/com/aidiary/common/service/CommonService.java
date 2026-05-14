@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -71,7 +72,8 @@ public class CommonService {
     log.info("sessionLoginId:{}",sessionLoginId);
 
     if(user == null){
-      throw new AuthenticationException();
+      HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
+      throw new CustomException(new CustomResponseEntity(serverError.getReasonPhrase(),serverError.hashCode(),serverError,serverError),serverError);
     }
 
     log.info("log6:{}",error);
