@@ -38,13 +38,42 @@ function getDiariesFromBack(array,realDiaryList){
     return realDiaryList;
 }
 
+// 버튼 리스트 가져오기
 function getButtonlist(startPage, endPage, pagination){
 
+    // 가장 왼쪽 버튼(가장 처음 이동)
+    let firstButton = document.createElement("button");
+    firstButton.id = "firstButton";
+    firstButton.innerHTML = "<<"
+    pagination.appendChild(firstButton);
+
+    //이전 버튼(한칸 이전 이동)
+    let beforeButton = document.createElement("button");
+    beforeButton.id = "beforeButton";
+    beforeButton.innerHTML = "<"
+    pagination.appendChild(beforeButton);
+
+    //페이지네이션 버튼
     for(let i = startPage; i <= endPage; i++){
         let buttonTag = document.createElement("button");
         buttonTag.innerHTML = i;
+        buttonTag.className = "buttonTag";
+        buttonTag.id = "buttonTag" + i;
         pagination.appendChild(buttonTag);
     }
+
+    //다음 버튼(한칸 이후 이동)
+    let afterButton = document.createElement("button");
+    afterButton.id = "afterButton";
+    afterButton.innerHTML = ">"
+    pagination.appendChild(afterButton);
+
+    // 가장 끝 이동
+    let endButton = document.createElement("button");
+    endButton.id = "endButton";
+    endButton.innerHTML = ">>"
+    pagination.appendChild(endButton);
+
     return pagination;
 }
 
@@ -77,7 +106,7 @@ function readDiaries(curPage,pageSize) {
         //startPage ~ endPage 버튼 리스트
         // 페이지네이션 불러오기
         let paginationObj = response.data.data.pagination;
-        pagination        = getButtonlist(paginationObj.startPage,
+        getButtonlist(paginationObj.startPage,
                                           paginationObj.endPage,
                                           pagination);
     });
@@ -93,11 +122,20 @@ document.addEventListener("DOMContentLoaded",function(){
 
     realDiaryList.insertAdjacentHTML("beforeend",header);
 
-
-
-
-
     //다이어리 리스트 가져오기 (초기화)
     readDiaries(1,10);
+
+    //버튼 클릭 시
+    // document.querySelectorAll(".buttonTag").forEach(function(button){
+    //     button.addEventListener("click",function(){
+    //             let id = item.id;
+    //             let curPage = id.substring(id.find('g'));
+    //
+    //     })
+    // })
+    // document.getElementsByClassName("buttonTag").addEventListner("click",function(){
+    //     let curPage =
+    //     readDiaries()
+    // })
 
 })

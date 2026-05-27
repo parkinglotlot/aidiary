@@ -12,13 +12,17 @@ import org.apache.ibatis.annotations.Update;
 @Mapper
 public interface DiaryMapper {
 
-  @Insert("insert into diary (content, date, title,writer_id,user_id,login_id) values (#{content},#{date},#{title},#{writer.id},#{writer.id},#{writer.id})")
+  @Insert("insert into diary (content, date, title,writer_id) values (#{content},#{date},#{title},#{writer.id})")
   int isInsertDiaryList(Diary diary);
 
-  @Select("SELECT id,content,date,title,ai_analysis,writer_id,user_id,login_id from diary WHERE writer_id = #{user.id} limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}")
+  // 해당되는 전체 일기장 리스트 가져오기
+  @Select("SELECT count(id) from diary WHERE writer_id = #{user.id}")
+  int totalCnt(PageRequestDTO pageRequestDTO, User user);
+
+  @Select("SELECT id,content,date,title,ai_analysis,writer_id from diary WHERE writer_id = #{user.id} limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}")
   List<Diary> selectRequestPaginationList(PageRequestDTO pageRequestDTO, User user);
 
-  @Select("SELECT id,content,date,title,ai_analysis,writer_id,user_id,login_id FROM diary WHERE writer_id = #{user.id} AND id = #{diaryId}")
+  @Select("SELECT id,content,date,title,ai_analysis,writer_id FROM diary WHERE writer_id = #{user.id} AND id = #{diaryId}")
   Diary getDiaryByIdLoginId(int diaryId, User user);
 
   @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")

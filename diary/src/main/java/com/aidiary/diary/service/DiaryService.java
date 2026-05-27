@@ -33,8 +33,11 @@ public class DiaryService {
       // 유저에 맞는 다이어리 리스트 반환
       List<Diary> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO,user);
 
+      //총 다이어리 수 반환
+      int totalDiaries = diaryMapper.totalCnt(pageRequestDTO,user);
+
       //pageResponseDTO 세팅 및 반환
-      PageResponseDTO pageResponseDTO = new PageResponseDTO(diaryList,pageRequestDTO);
+      PageResponseDTO pageResponseDTO = new PageResponseDTO(diaryList,pageRequestDTO,totalDiaries);
 
       return pageResponseDTO;
     } catch (Exception e) {

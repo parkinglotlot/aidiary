@@ -13,10 +13,10 @@ public class PageResponseDTO<T> {
   private PageRequestDTO pageRequestDTO;
   private Pagination pagination;
 
-  public PageResponseDTO(List<T> list, PageRequestDTO pageRequestDTO){
+  public PageResponseDTO(List<T> list, PageRequestDTO pageRequestDTO,int totalCnt){
     this.list = list;
     this.pageRequestDTO = pageRequestDTO;
-    this.pagination = new Pagination(pageRequestDTO.getPage(), pageRequestDTO.getPageSize());
+    this.pagination = new Pagination(pageRequestDTO.getPage(), totalCnt);
   }
 
 

@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +34,7 @@ public class UserService {
   private final Util util;
 //  private final SecurityConfig securityConfig;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
+  private final View error;
 
   //로그인 아이디로 유저 단순 반환
   public User findUserById(String loginId){
@@ -92,7 +94,6 @@ public class UserService {
 
     boolean emptyEmail = !(member.getEmail() == null || member.getEmail().isEmpty());
     boolean isEmailVerify = (boolean) session.getAttribute("VERIFY_NUMBER");
-
     boolean emptyFullName = !(member.getFullName() == null || member.getFullName().isEmpty());
 
     boolean emptyBirthday = member.getBirthday() != null;

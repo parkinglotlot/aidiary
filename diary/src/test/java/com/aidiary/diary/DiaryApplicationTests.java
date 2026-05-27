@@ -142,6 +142,28 @@ class DiaryApplicationTests {
 
 	}
 
+//  transactional 없이 데이터 밀어넣기
+	@Test
+	void MembershipTest2() throws ParseException {
+		User user = new User();
+		user.setLoginId("ujin2597");
+		user.setPassword("1234");
+		user.setEmail("ujin2597@naver.com");
+		user.setFullName("YoujinPark");
+
+		DateTimeFormatter ldt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		user.setBirthday(LocalDate.parse("1991-08-25",ldt));
+
+		userRepository.save(user);
+
+		Optional<User> isLoginUser = userRepository.findByLoginId(user.getLoginId());
+
+		if(isLoginUser.isPresent()) log.info("성공");
+		else log.info("실패");
+
+
+	}
+
 	//유효성 검사
 	@Transactional
 	@Test
@@ -422,7 +444,7 @@ class DiaryApplicationTests {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		User youjin = userRepository.getUserByLoginId("ujin2597");
 
-		for(int i = 0; i < 11; i++){
+		for(int i = 11; i < 120; i++){
 			Diary diary = new Diary("title" + i,"content" + i,localDateTime);
 			diary.setWriter(youjin);
 			boolean isInsert = diaryMapper.isInsertDiaryList(diary) != 0;
