@@ -14,9 +14,14 @@ let header = '<thead>\n' +
 //페이지네이션 선언
 let pagination = document.getElementById("pagination");
 
+//전체 게시글 수
+let totalCnt = 0;
+
 function getDiariesFromBack(array,realDiaryList){
     // let list = '';
     let tBody = document.createElement("tbody");
+    tBody.id = "tBody";
+
     array.forEach(function(item){
         let trTag = document.createElement("tr");
         tBody.append(trTag);
@@ -59,6 +64,7 @@ function getButtonlist(startPage, endPage, pagination){
         buttonTag.innerHTML = i;
         buttonTag.className = "buttonTag";
         buttonTag.id = "buttonTag" + i;
+
         pagination.appendChild(buttonTag);
     }
 
@@ -109,14 +115,15 @@ function readDiaries(curPage,pageSize) {
         getButtonlist(paginationObj.startPage,
                                           paginationObj.endPage,
                                           pagination);
+
+        totalCnt = paginationObj.totalCnt;
     });
 }
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded",function(){
 
-
-   realDiaryList.className = "diary-table";
+    realDiaryList.className = "diary-table";
 
    // realDiaryList.InnerHTML = "<>"
 
@@ -125,17 +132,31 @@ document.addEventListener("DOMContentLoaded",function(){
     //다이어리 리스트 가져오기 (초기화)
     readDiaries(1,10);
 
-    //버튼 클릭 시
-    // document.querySelectorAll(".buttonTag").forEach(function(button){
-    //     button.addEventListener("click",function(){
-    //             let id = item.id;
-    //             let curPage = id.substring(id.find('g'));
-    //
-    //     })
-    // })
-    // document.getElementsByClassName("buttonTag").addEventListner("click",function(){
-    //     let curPage =
-    //     readDiaries()
-    // })
+    //해당 버튼 클릭 시
+    pagination.addEventListener("click",function(e){
+        if(e.target.querySelectorAll("button")){
+            realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
+            pagination.innerHTML = ""; //페이지네이션 초기화
+            realDiaryList.insertAdjacentHTML("beforeend",header); // 테이블 헤더만 넣기
+            let curPage = 1;
+            //1. 숫자 버튼일때
+            if(e.target.classList.contains("buttonTag")){
+                let id = e.target.id; // 클릭한 대상객체 id
+                curPage = Number(id.replace(/\D/g, ""));
+            } else if (e.target.id === "firstButton"){
+                //2. 가장 처음 이동 버튼일 때
+                curPage = 1;
+            } else if (e.target.id === "endButton"){
+                //3. 가장 끝 이동 버튼일때
+                curPage = Math.ceil(totalCnt/10);
+
+            }
+            console.log("curPage",curPage);
+            readDiaries(curPage,10);
+        }
+
+    })
+
+
 
 })

@@ -49,26 +49,29 @@ public class UserController {
     log.info("loginId:{}",loginId);
     //로그인 검사
     boolean isLogin = false;
+
     try {
       isLogin = userService.existsByLoginIdAndPassword(loginId,passWord);
+      HttpStatus status = isLogin ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+
+      String message = isLogin ? "Success" : "Fail";
+      Object data = isLogin ? loginId : null;
+      log.info("isLogin:{}",isLogin);
+      log.info("data:{}",data);
+
+      if(isLogin){
+        userService.loginSession(request,loginId);
+      }
+      return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),data,status));
+
     } catch (Exception e) {
       HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
       CustomResponseEntity customResponseEntity = new CustomResponseEntity(status.getReasonPhrase(),status.value(),null,status);
-      throw new CustomException(customResponseEntity,status);
+      return ResponseEntity.status(status).body(customResponseEntity);
     }
 
-    HttpSession session = request.getSession();
 
-    if(isLogin){
-      userService.loginSession(request,loginId);
-    }
 
-    HttpStatus status = isLogin ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
-    String message = isLogin ? "Success" : "Fail";
-    Object data = isLogin ? loginId : null;
-    log.info("data:{}",data);
-
-    return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),data,status));
 
   }
 
@@ -108,14 +111,15 @@ public class UserController {
     HttpSession session = request.getSession();
 
     try {
+      String loginId = (String)session.getAttribute("loginId");
       session.invalidate();
+      HttpStatus statusOK = HttpStatus.OK;
+      return new ResponseEntity<>(new CustomResponseEntity(statusOK.getReasonPhrase(),statusOK.hashCode(),loginId,statusOK),statusOK);
     } catch (Exception e) {
       HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
       throw new CustomException(new CustomResponseEntity(status.getReasonPhrase(),status.hashCode(),null,status),status);
     }
-    HttpStatus statusOK = HttpStatus.OK;
-    String loginId = (String)session.getAttribute("loginId");
-    return new ResponseEntity<CustomResponseEntity>(new CustomResponseEntity(statusOK.getReasonPhrase(),statusOK.hashCode(),loginId,statusOK),statusOK);
+
 
   }
 

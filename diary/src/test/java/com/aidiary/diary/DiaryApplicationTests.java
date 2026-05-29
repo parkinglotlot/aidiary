@@ -144,10 +144,11 @@ class DiaryApplicationTests {
 
 //  transactional 없이 데이터 밀어넣기
 	@Test
-	void MembershipTest2() throws ParseException {
+	void MembershipTest2() throws Exception {
 		User user = new User();
 		user.setLoginId("ujin2597");
-		user.setPassword("1234");
+		String hashedPassword = util.encAES("1234");
+		user.setPassword(hashedPassword);
 		user.setEmail("ujin2597@naver.com");
 		user.setFullName("YoujinPark");
 
@@ -160,6 +161,24 @@ class DiaryApplicationTests {
 
 		if(isLoginUser.isPresent()) log.info("성공");
 		else log.info("실패");
+
+
+	}
+
+	//  transactional 없이 데이터 업데이트
+	@Test
+	void MembershipTestUpdate() throws Exception {
+		String hashedPassword = util.encAES("1234");
+		Optional<User> isLoginUser = userRepository.findByLoginId("gwang11167");
+		if(isLoginUser.isPresent()){
+			isLoginUser.get().setPassword(hashedPassword);
+			userRepository.save(isLoginUser.get());
+			log.info("성공");
+		}else{
+			log.info("이미 존재");
+		}
+
+
 
 
 	}

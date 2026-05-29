@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -56,8 +57,9 @@ public class UserService {
   public boolean existsByLoginIdAndPassword(String loginId,String password)throws Exception{
     //암호화
     String hashedPassword = util.encAES(password);
-
-    if(userRepository.findByLoginIdAndPassword(loginId,hashedPassword) != null){
+    List<User> loginUserList = userRepository.findByLoginIdAndPassword(loginId,hashedPassword);
+    if(loginUserList != null && !loginUserList.isEmpty()){
+      log.info("hashedPassword:{}",hashedPassword);
       return true;
     }
     return false;

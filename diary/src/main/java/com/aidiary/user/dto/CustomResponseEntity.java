@@ -1,6 +1,6 @@
 package com.aidiary.user.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +17,8 @@ public class CustomResponseEntity {
   private String message;
   private int code;
   private Object data;
+
+  @JsonIgnore
   private HttpStatus httpStatus;
 
   public CustomResponseEntity(String message, int code,Object data,HttpStatus httpStatus){

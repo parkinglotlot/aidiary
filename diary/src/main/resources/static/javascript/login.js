@@ -18,29 +18,24 @@ function login(loginId,password){
     //                console.log(data);
     //            }
     //        })
-    window.fetch("/user/login",{
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            loginId:loginId,
-            password:password
-                             })
-    }).then(function(res){
-        if(!res.ok) throw new Error("서버 응답 에러:"+res.status);
-        return res.json();
+    axios.post("/user/login",{
+        loginId:loginId,
+        password:password
     }).then(function(response){
         console.log(response);
         // alert("로그인 완료");
-        Swal.fire({
-            title: "로그인 완료",
-            text: "다이어리 페이지로 이동합니다.",
-            icon: "success"
-                  })
-        setTimeout(function(){
-            location.href = "/diary/goHome"
-        },1500)
+        if(response.status === 200){
+            Swal.fire({
+                          title: "로그인 완료",
+                          text: "다이어리 페이지로 이동합니다.",
+                          icon: "success"
+                      });
+
+            setTimeout(function(){
+                location.href = "/diary/goHome"
+            },1500);
+        }
+
 
     }).catch(function(error){
         console.log(error);
@@ -48,9 +43,9 @@ function login(loginId,password){
                       title: "로그인 실패",
                       text: "다시 시도해주세요.",
                       icon: "error"
-                  })
+        })
 
-    })
+    });
     return null;
 }
 
