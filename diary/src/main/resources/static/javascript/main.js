@@ -14,6 +14,12 @@ let header = '<thead>\n' +
 //페이지네이션 선언
 let pagination = document.getElementById("pagination");
 
+//현재 페이지 (초기화)
+let curPage = 1;
+
+//페이지 사이즈
+const pageSize = 10;
+
 //전체 게시글 수
 let totalCnt = 0;
 
@@ -64,6 +70,11 @@ function getButtonlist(startPage, endPage, pagination){
         buttonTag.innerHTML = i;
         buttonTag.className = "buttonTag";
         buttonTag.id = "buttonTag" + i;
+        if(i === curPage){
+            buttonTag.classList.add("active");
+        }else{
+            buttonTag.classList.remove("active");
+        }
 
         pagination.appendChild(buttonTag);
     }
@@ -79,6 +90,25 @@ function getButtonlist(startPage, endPage, pagination){
     endButton.id = "endButton";
     endButton.innerHTML = ">>"
     pagination.appendChild(endButton);
+
+    //조건 별로 클래스 넣어주기
+    //1. curPage == 1
+    if(curPage === 1){
+        firstButton.classList.add("disabled");
+        beforeButton.classList.add("disabled");
+    }else {
+        firstButton.classList.remove("disabled");
+        beforeButton.classList.remove("disabled");
+    }
+
+    //2. curPage == Math.ceil(totalCnt / pageSize)
+    if(curPage === Math.ceil(totalCnt / pageSize)){
+        afterButton.classList.add("disabled");
+        endButton.classList.add("disabled");
+    }else{
+        afterButton.classList.remove("disabled");
+        endButton.classList.remove("disabled");
+    }
 
     return pagination;
 }
@@ -130,17 +160,20 @@ document.addEventListener("DOMContentLoaded",function(){
     realDiaryList.insertAdjacentHTML("beforeend",header);
 
     //다이어리 리스트 가져오기 (초기화)
-    readDiaries(1,10);
+    readDiaries(curPage,pageSize);
 
     //해당 버튼 클릭 시
     pagination.addEventListener("click",function(e){
+
         if(e.target.querySelectorAll("button")){
+
             realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
             pagination.innerHTML = ""; //페이지네이션 초기화
             realDiaryList.insertAdjacentHTML("beforeend",header); // 테이블 헤더만 넣기
-            let curPage = 1;
+            alert("button");
             //1. 숫자 버튼일때
             if(e.target.classList.contains("buttonTag")){
+
                 let id = e.target.id; // 클릭한 대상객체 id
                 curPage = Number(id.replace(/\D/g, ""));
             } else if (e.target.id === "firstButton"){
@@ -149,10 +182,18 @@ document.addEventListener("DOMContentLoaded",function(){
             } else if (e.target.id === "endButton"){
                 //3. 가장 끝 이동 버튼일때
                 curPage = Math.ceil(totalCnt/10);
+            }else if(e.target.id === "afterButton"){
+                //한칸 이동 버튼 일때
+                // 가장 끝 페이지 아니면 그대로
 
+                curPage = curPage !== Math.ceil(totalCnt/10)? curPage + 1 : curPage;
+            }else if (e.target.id === "beforeButton"){
+                //한칸 이동 버튼 일때(이전)
+                //첫페이지 아니면 그대로
+                curPage = curPage !== 1? curPage - 1 : curPage;
             }
             console.log("curPage",curPage);
-            readDiaries(curPage,10);
+            readDiaries(curPage,pageSize);
         }
 
     })
