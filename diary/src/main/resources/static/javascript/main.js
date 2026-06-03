@@ -54,12 +54,14 @@ function getButtonlist(startPage, endPage, pagination){
 
     // 가장 왼쪽 버튼(가장 처음 이동)
     let firstButton = document.createElement("button");
+    firstButton.classList.add('btn');
     firstButton.id = "firstButton";
     firstButton.innerHTML = "<<"
     pagination.appendChild(firstButton);
 
     //이전 버튼(한칸 이전 이동)
     let beforeButton = document.createElement("button");
+    beforeButton.classList.add('btn');
     beforeButton.id = "beforeButton";
     beforeButton.innerHTML = "<"
     pagination.appendChild(beforeButton);
@@ -69,6 +71,7 @@ function getButtonlist(startPage, endPage, pagination){
         let buttonTag = document.createElement("button");
         buttonTag.innerHTML = i;
         buttonTag.className = "buttonTag";
+        buttonTag.classList.add('btn');
         buttonTag.id = "buttonTag" + i;
         if(i === curPage){
             buttonTag.classList.add("active");
@@ -81,12 +84,14 @@ function getButtonlist(startPage, endPage, pagination){
 
     //다음 버튼(한칸 이후 이동)
     let afterButton = document.createElement("button");
+    afterButton.classList.add('btn');
     afterButton.id = "afterButton";
     afterButton.innerHTML = ">"
     pagination.appendChild(afterButton);
 
     // 가장 끝 이동
     let endButton = document.createElement("button");
+    endButton.classList.add('btn');
     endButton.id = "endButton";
     endButton.innerHTML = ">>"
     pagination.appendChild(endButton);
@@ -94,20 +99,20 @@ function getButtonlist(startPage, endPage, pagination){
     //조건 별로 클래스 넣어주기
     //1. curPage == 1
     if(curPage === 1){
-        firstButton.classList.add("disabled");
-        beforeButton.classList.add("disabled");
+        firstButton.disabled = true;//가장 처음 버튼 비활성화
+        beforeButton.disabled = true;//이전 버튼 비활성화
     }else {
-        firstButton.classList.remove("disabled");
-        beforeButton.classList.remove("disabled");
+        firstButton.disabled = false;
+        beforeButton.disabled = false;
     }
 
     //2. curPage == Math.ceil(totalCnt / pageSize)
     if(curPage === Math.ceil(totalCnt / pageSize)){
-        afterButton.classList.add("disabled");
-        endButton.classList.add("disabled");
+        afterButton.disabled = true;
+        endButton.disabled = true;
     }else{
-        afterButton.classList.remove("disabled");
-        endButton.classList.remove("disabled");
+        afterButton.disabled = false;
+        endButton.disabled = false;
     }
 
     return pagination;
@@ -170,7 +175,7 @@ document.addEventListener("DOMContentLoaded",function(){
             realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
             pagination.innerHTML = ""; //페이지네이션 초기화
             realDiaryList.insertAdjacentHTML("beforeend",header); // 테이블 헤더만 넣기
-            alert("button");
+            // alert("button");
             //1. 숫자 버튼일때
             if(e.target.classList.contains("buttonTag")){
 
@@ -184,8 +189,7 @@ document.addEventListener("DOMContentLoaded",function(){
                 curPage = Math.ceil(totalCnt/10);
             }else if(e.target.id === "afterButton"){
                 //한칸 이동 버튼 일때
-                // 가장 끝 페이지 아니면 그대로
-
+                // 가장 끝 페이지 아니면 curPage + 1
                 curPage = curPage !== Math.ceil(totalCnt/10)? curPage + 1 : curPage;
             }else if (e.target.id === "beforeButton"){
                 //한칸 이동 버튼 일때(이전)
