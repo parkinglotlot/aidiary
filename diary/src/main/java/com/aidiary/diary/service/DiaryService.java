@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class DiaryService {
 
   private final DiaryMapper diaryMapper;
   private final DiaryRepository diaryRepository;
+  private final Logger log = LoggerFactory.getLogger(DiaryService.class);
 
   // 조회 : 유저에 맞는 다이어리 리스트 조회
   public PageResponseDTO returnDiaries(int curPage, int pageSize, User user) {
@@ -31,6 +34,7 @@ public class DiaryService {
       PageRequestDTO pageRequestDTO = new PageRequestDTO(curPage,pageSize);
 
       // 유저에 맞는 다이어리 리스트 반환
+      log.info("returnDiaries:{}",pageRequestDTO);
       List<Diary> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO,user);
 
       //총 다이어리 수 반환

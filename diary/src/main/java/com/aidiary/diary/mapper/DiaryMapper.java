@@ -16,10 +16,21 @@ public interface DiaryMapper {
   int isInsertDiaryList(Diary diary);
 
   // 해당되는 전체 일기장 리스트 가져오기
-  @Select("SELECT count(id) from diary WHERE writer_id = #{user.id}")
+  @Select("SELECT count(id) from diary WHERE writer_id = #{user.id} and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' or title like concat('%',#{pageRequestDTO.filter},'%'))")
   int totalCnt(PageRequestDTO pageRequestDTO, User user);
 
-  @Select("SELECT id,content,date,title,ai_analysis,writer_id from diary WHERE writer_id = #{user.id} limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}")
+  //검색어 Test
+  @Select("SELECT count(id) from diary WHERE writer_id = #{user.id} and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' or title like concat('%',#{pageRequestDTO.filter},'%'))")
+  int totalCntTest(PageRequestDTO pageRequestDTO, User user);
+
+  @Select("<script>"
+      + "SELECT id,content,date,title,ai_analysis,writer_id from diary "
+      + "WHERE writer_id = #{user.id}"
+      + "<if test = 'pageRequestDTO.filter != null and pageRequestDTO.filter.trim() !=\"\"'>"
+      + "and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' or title like concat('%',#{pageRequestDTO.filter},'%')) "
+      + "</if>"
+      + "limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}"
+      + "</script>")
   List<Diary> selectRequestPaginationList(PageRequestDTO pageRequestDTO, User user);
 
   @Select("SELECT id,content,date,title,ai_analysis,writer_id FROM diary WHERE writer_id = #{user.id} AND id = #{diaryId}")

@@ -533,6 +533,17 @@ class DiaryApplicationTests {
 
 	}
 
+	@Test
+	public void selectFilterCount(){
+		PageRequestDTO pageRequestDTO = new PageRequestDTO(1,10);
+		User user = userRepository.getUserByLoginId("ujin2597");
+		pageRequestDTO.setFilter("6");
+
+		int returnValue = diaryMapper.totalCntTest(pageRequestDTO,user);
+		log.info("returnValue:{}",returnValue);
+
+	}
+
 
 
 }

@@ -69,6 +69,7 @@ public class DiaryController {
 
     // 프론트에 반환할 (리스트를 포함한) paginationDTO 생성 (서비스단에서 에러 핸들링 포함)
 
+//    log.info("curUser:{}",curUser);
     PageResponseDTO pageResponseDTO =  diaryService.returnDiaries(curPage,pageSize,curUser);
     log.info("pageResponseDTO:{}",pageResponseDTO);
     // 최종 상태 반환
