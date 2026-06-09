@@ -27,7 +27,7 @@ public class DiaryService {
   private final Logger log = LoggerFactory.getLogger(DiaryService.class);
 
   // 조회 : 유저에 맞는 다이어리 리스트 조회
-  public PageResponseDTO returnDiaries(int curPage, int pageSize, User user) {
+  public PageResponseDTO returnDiaries(int curPage, int pageSize, String filter, User user) {
 
     try {
       //pageRequestDTO 설정
@@ -35,6 +35,7 @@ public class DiaryService {
 
       // 유저에 맞는 다이어리 리스트 반환
       log.info("returnDiaries:{}",pageRequestDTO);
+      pageRequestDTO.setFilter(filter); // 검색어 세팅
       List<Diary> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO,user);
 
       //총 다이어리 수 반환

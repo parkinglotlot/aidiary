@@ -1,53 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Main</title>
-    <link rel="stylesheet" th:href ="@{/css/main.css}">
-     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Main</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
+  </head>
+  <body>
+    <div th:replace="~{fragments/layout :: adminLayout(~{::section})}">
+      <section>
+        <div class="diary-container">
+          <header class="diary-header">
+            <h1>다이어리</h1>
 
-</head>
-<body>
+            <div class="header-right">
+              <input
+                type="text"
+                id="searchKeyword"
+                placeholder="제목 또는 내용을 검색하세요"
+              />
+              <button type="button" id="btnSearch">검색</button>
+              <button type="button" id="btnWrite">글쓰기</button>
+            </div>
+          </header>
 
-<div th:replace="~{fragments/layout :: adminLayout(~{::section})}">
-  <section>
-    <div class="diary-container">
+          <section class="diary-list" id="diaryList"></section>
 
-      <header class="diary-header">
-        <h1>다이어리</h1>
+          <section class="empty-area" id="emptyArea" style="display: none">
+            <p>등록된 다이어리가 없습니다.</p>
+          </section>
 
-        <div class="header-right">
-          <input
-              type="text"
-              id="searchKeyword"
-              placeholder="제목 또는 내용을 검색하세요"
-          />
+          <section class="loading-area" id="loadingArea" style="display: none">
+            <p>불러오는 중...</p>
+          </section>
 
-          <button type="button" id="btnSearch">검색</button>
-          <button type="button" id="btnWrite">글쓰기</button>
+          <nav class="pagination" id="pagination"></nav>
+
+          <script th:src="@{/javascript/main.js}"></script>
         </div>
-      </header>
-
-      <section class="diary-list" id="diaryList">
-
       </section>
-
-      <section class="empty-area" id="emptyArea" style="display:none;">
-        <p>등록된 다이어리가 없습니다.</p>
-      </section>
-
-      <section class="loading-area" id="loadingArea" style="display:none;">
-        <p>불러오는 중...</p>
-      </section>
-
-      <nav class="pagination" id="pagination"></nav>
-
     </div>
-  </section>
-</div>
-
-<script th:src="@{/javascript/main.js}"></script>
-</body>
+  </body>
 </html>
