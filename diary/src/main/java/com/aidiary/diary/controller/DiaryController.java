@@ -1,5 +1,6 @@
 package com.aidiary.diary.controller;
 
+
 import com.aidiary.common.service.CommonService;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.jpa.Diary;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,6 +84,41 @@ public class DiaryController {
         .build();
 
     return ResponseEntity.ok(customResponseEntity);
+  }
+
+  //다이어리 상세 페이지 이동
+  @GetMapping("/detail/{id}")
+  @ResponseBody
+  public ResponseEntity<CustomResponseEntity> readDetail(HttpServletRequest request, @RequestParam long id) {
+
+    HttpSession session = request.getSession();
+    // 현재 로그인된 아이디 가져오기
+    String loginId = String.valueOf(session.getAttribute("loginId"));
+
+    // 반환할 CustomResponseEntity
+    CustomResponseEntity customResponseEntity = new CustomResponseEntity();
+
+    //반환할 HttpStatus
+    HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+
+
+    // 다이어리 반환
+    Diary diary =  diaryService.detailOk(loginId,id);
+
+
+    if(diary != null) {
+      httpStatus = HttpStatus.OK;
+    }
+
+    customResponseEntity.builder()
+        .httpStatus(httpStatus)
+        .code(httpStatus.hashCode())
+        .message(httpStatus.getReasonPhrase())
+        .data(null)
+        .build();
+
+
+    return new ResponseEntity<>(customResponseEntity,httpStatus);
   }
 
   //다이어리 생성

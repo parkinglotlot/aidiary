@@ -34,7 +34,7 @@ public interface DiaryMapper {
   List<Diary> selectRequestPaginationList(PageRequestDTO pageRequestDTO, User user);
 
   @Select("SELECT id,content,date,title,ai_analysis,writer_id FROM diary WHERE writer_id = #{user.id} AND id = #{diaryId}")
-  Diary getDiaryByIdLoginId(int diaryId, User user);
+  Diary getDiaryByIdLoginId(long diaryId, User user);
 
   @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")
   int updateDiary(Diary diary, User user);

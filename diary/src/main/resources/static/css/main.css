@@ -163,3 +163,49 @@ button:hover {
   background-color: #f6f7fb;
   transition: 0.2s;
 }
+
+
+/* 상세 페이지 css */
+
+.diary-detail-card {
+  padding: 28px;
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.diary-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.diary-detail-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.4;
+}
+
+.diary-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 24px 0;
+}
+
+.diary-detail-content {
+  min-height: 260px;
+  line-height: 1.8;
+  font-size: 16px;
+  color: #333;
+  white-space: pre-wrap;
+}
+
+#btnDelete {
+  background-color: #c0392b;
+}
+
+#btnDelete:hover {
+  background-color: #a93226;
+}

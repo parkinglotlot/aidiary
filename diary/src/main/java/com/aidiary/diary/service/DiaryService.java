@@ -8,8 +8,10 @@ import com.aidiary.diary.mapper.DiaryRepository;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
+import com.aidiary.user.repository.UserRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DiaryService {
 
+  private final UserRepository userRepository;
   private final DiaryMapper diaryMapper;
   private final DiaryRepository diaryRepository;
   private final Logger log = LoggerFactory.getLogger(DiaryService.class);
@@ -49,6 +52,30 @@ public class DiaryService {
       HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
       throw new CustomException(new CustomResponseEntity(),serverError);
     }
+  }
+
+  // 유저에게 맞는 다이어리 반환(로그인 유저 존재 검증 및 반환 + 해당 아이디의 게시글이 유저의 것인지 판단 + 페이지 이동-쿼리스트링 붙힌 상태)
+  public Diary detailOk(String loginId, Long id){
+    boolean result = true;
+
+    // 로그인 유저 존재 검증
+    Optional<User> user =  userRepository.findByLoginId(loginId);
+    if(!user.isPresent()) {
+      result = false;
+
+    }
+
+    //해당 아이디의 게시글이 유저의 것인지 판단
+    Diary diary =  diaryMapper.getDiaryByIdLoginId(id,user.get());
+
+    if(diary == null) {
+      result = false;
+
+    }
+
+    if(result)return diary;
+
+    return null;
   }
 
   // 생성 : 유저에 속한 다이어리 등록

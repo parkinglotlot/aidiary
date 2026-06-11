@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Diary Detail</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
+  </head>
+
+  <body>
+    <div th:replace="~{fragments/layout :: adminLayout(~{::section})}">
+      <section>
+        <div class="diary-container">
+          <header class="diary-header">
+            <h1>다이어리 상세</h1>
+
+            <div class="header-right">
+              <button type="button" id="btnList">목록</button>
+              <button type="button" id="btnEdit">수정</button>
+              <button type="button" id="btnDelete">삭제</button>
+            </div>
+          </header>
+
+          <article class="diary-detail-card">
+            <div class="diary-detail-header">
+              <h2 class="diary-detail-title" id="diaryTitle">
+                오늘의 다이어리 제목
+              </h2>
+
+              <span class="diary-date" id="diaryCreatedAt">
+                2026-06-11
+              </span>
+            </div>
+
+            <div class="diary-meta">
+              <span id="diaryWriter">작성자: 관리자</span>
+              <span id="diaryMood">기분: 좋음</span>
+            </div>
+
+            <hr class="diary-divider" />
+
+            <div class="diary-detail-content" id="diaryContent">
+              오늘 작성한 다이어리 내용이 여기에 표시됩니다.
+              <br /><br />
+              여러 줄의 내용도 자연스럽게 표시될 수 있도록 구성했습니다.
+            </div>
+          </article>
+        </div>
+
+        <script th:src="@{/javascript/detail.js}"></script>
+      </section>
+    </div>
+  </body>
+</html>

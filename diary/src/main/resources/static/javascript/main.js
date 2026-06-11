@@ -8,6 +8,9 @@ let diaryList;
 let realDiaryList;
 let header = "";
 
+// 다이어리 테이블의 row를 담당
+let trTag;
+
 //페이지네이션 선언
 let pagination;
 
@@ -26,7 +29,8 @@ function getDiariesFromBack(array, realDiaryList) {
   tBody.id = "tBody";
 
   array.forEach(function (item) {
-    let trTag = document.createElement("tr");
+    trTag = document.createElement("tr");
+    trTag.id = item.id; //id 세팅
     tBody.append(trTag);
     console.log(item.title);
     let td1 = document.createElement("td");
@@ -123,7 +127,7 @@ function readDiaries(curPage, pageSize, filter) {
       params: {
         curPage: curPage,
         pageSize: pageSize,
-        filter: filter,
+        filter: filter
       },
     })
     .then(function (response) {
@@ -223,5 +227,28 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
   });
+
+  //trTag 클릭
+  trTag.addEventListner("click",function(e){
+    if(e.target.id != null){
+      //해당 row의 id 존재
+      axios.get("/diary/{id}",{
+        headers: {
+          "Content-Type": "application/json"
+        },
+        params:{
+          id : e.target.id
+        }
+      }).then(function(response){
+        if (response.status !== 200){
+          Swal.fire({
+                      title: "에러 발생",
+                      text: "데이터를 불러올 수 없습니다.",
+                      type: "error",
+                    })
+        }
+      })
+    }
+  })
 
 });
