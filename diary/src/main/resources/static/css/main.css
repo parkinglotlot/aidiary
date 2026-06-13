@@ -12,10 +12,9 @@ body {
 }
 
 .diary-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 24px;
+  background: #f5f6fa;
+  border-radius: 20px;
+  padding: 24px;
 }
 
 .diary-header {
@@ -168,10 +167,10 @@ button:hover {
 /* 상세 페이지 css */
 
 .diary-detail-card {
-  padding: 28px;
-  background-color: #fff;
-  border-radius: 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .diary-detail-header {
@@ -184,7 +183,8 @@ button:hover {
 
 .diary-detail-title {
   margin: 0;
-  font-size: 24px;
+  font-size: 32px;
+  font-weight: 700;
   line-height: 1.4;
 }
 
@@ -195,11 +195,24 @@ button:hover {
 }
 
 .diary-detail-content {
-  min-height: 260px;
-  line-height: 1.8;
+  min-height: 350px;
+  line-height: 2;
   font-size: 16px;
-  color: #333;
+  color: #444;
   white-space: pre-wrap;
+}
+
+.diary-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.diary-meta span {
+  background: #f5f6fa;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
 }
 
 #btnDelete {
@@ -208,4 +221,117 @@ button:hover {
 
 #btnDelete:hover {
   background-color: #a93226;
+}
+
+/* AI 감정 분석 카드 */
+
+.ai-analysis-card {
+  margin-top: 24px;
+  padding: 28px 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eef0f7;
+}
+
+.ai-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ai-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #7c83ff;
+  text-transform: uppercase;
+}
+
+.ai-analysis-header h3 {
+  margin: 0;
+  font-size: 22px;
+  color: #222;
+}
+
+.btn-ai {
+  background: #6c63ff;
+  color: #fff;
+}
+
+.btn-ai:hover {
+  background: #5a52d8;
+}
+
+.ai-analysis-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.emotion-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.emotion-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #eef0ff;
+  border-radius: 50%;
+  font-size: 28px;
+}
+
+.emotion-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+}
+
+.emotion-desc {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #666;
+}
+
+.emotion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.emotion-tags span {
+  padding: 7px 12px;
+  background: #eef0ff;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #555fd6;
+}
+
+.ai-comment-box {
+  padding: 18px 20px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #edf0f5;
+}
+
+.ai-comment-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: #333;
+}
+
+.ai-comment-box p:last-child {
+  margin: 0;
+  line-height: 1.7;
+  color: #555;
 }

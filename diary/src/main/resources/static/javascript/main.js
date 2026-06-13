@@ -30,6 +30,7 @@ function getDiariesFromBack(array, realDiaryList) {
 
   array.forEach(function (item) {
     trTag = document.createElement("tr");
+    trTag.className = "row"; //클래스 세팅
     trTag.id = item.id; //id 세팅
     tBody.append(trTag);
     console.log(item.title);
@@ -143,6 +144,7 @@ function readDiaries(curPage, pageSize, filter) {
       let arrayList = response.data.data.list;
 
       realDiaryList = getDiariesFromBack(arrayList, realDiaryList);
+      trTag = document.getElementsByClassName("row"); //세팅된 row 변수에 선언
       // console.log("realDiaryList",realDiaryList);
       diaryList.appendChild(realDiaryList);
 
@@ -157,6 +159,7 @@ function readDiaries(curPage, pageSize, filter) {
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
+
   searchBtn = document.getElementById("btnSearch");
   diaryList = document.getElementById("diaryList");
   realDiaryList = document.createElement("table");
@@ -170,6 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "</thead>\n" +
     "\n";
   pagination = document.getElementById("pagination");
+
 
   realDiaryList.className = "diary-table";
 
@@ -229,16 +233,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   //trTag 클릭
-  trTag.addEventListner("click",function(e){
-    if(e.target.id != null){
+  diaryList.addEventListener("click",function(e){
+    // console.log("e.target.closest(\"tr\")",e.target.closest("tr").id);
+    let id = e.target.closest("tr").id;
+    if(id != null){
       //해당 row의 id 존재
-      axios.get("/diary/{id}",{
+      axios.get(`/diary/returnDetail/${id}`,{
         headers: {
           "Content-Type": "application/json"
         },
-        params:{
-          id : e.target.id
-        }
+
       }).then(function(response){
         if (response.status !== 200){
           Swal.fire({
@@ -247,8 +251,11 @@ document.addEventListener("DOMContentLoaded", function () {
                       type: "error",
                     })
         }
+        console.log("성공?",response);
+        location.href = `/diary/detail/${id}`;
       })
     }
+
   })
 
 });

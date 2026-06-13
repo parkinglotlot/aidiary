@@ -1,7 +1,15 @@
+let logoutBtn; //로그아웃 버튼
+let diaryMenus; //다이어리 메뉴
+
+
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function(){
-    let logoutBtn = document.getElementById("logOutBtn");
+    logoutBtn = document.getElementById("logOutBtn");
+
+    diaryMenus = document.querySelectorAll(".diaryMenu");
+
+
 
     logoutBtn.addEventListener("click",function(){
         window.fetch("/user/logOut",{
@@ -17,5 +25,14 @@ document.addEventListener("DOMContentLoaded", function(){
                       })
         })
     })
+
+    //다이어리 목록 이동
+    diaryMenus.forEach(function(diaryMenu){
+        diaryMenu.addEventListener("click",function(){
+            window.location.href = "/diary/goHome";
+        })
+    })
+
+
 
 })

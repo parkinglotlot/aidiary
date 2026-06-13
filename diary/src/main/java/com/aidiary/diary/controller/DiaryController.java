@@ -5,7 +5,6 @@ import com.aidiary.common.service.CommonService;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.service.DiaryService;
-import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.service.UserService;
@@ -13,14 +12,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -86,10 +84,10 @@ public class DiaryController {
     return ResponseEntity.ok(customResponseEntity);
   }
 
-  //다이어리 상세 페이지 이동
-  @GetMapping("/detail/{id}")
+  //다이어리 상세 페이지 여부 반환
+  @GetMapping("/returnDetail/{id}")
   @ResponseBody
-  public ResponseEntity<CustomResponseEntity> readDetail(HttpServletRequest request, @RequestParam long id) {
+  public ResponseEntity<CustomResponseEntity> isDetail(HttpServletRequest request, @PathVariable long id) {
 
     HttpSession session = request.getSession();
     // 현재 로그인된 아이디 가져오기
@@ -106,20 +104,31 @@ public class DiaryController {
     Diary diary =  diaryService.detailOk(loginId,id);
 
 
+
+
     if(diary != null) {
       httpStatus = HttpStatus.OK;
+      log.info("diary:{}",diary.getTitle());
     }
-
-    customResponseEntity.builder()
+    log.info("httpStatus:{}",httpStatus);
+    customResponseEntity =  CustomResponseEntity.builder()
         .httpStatus(httpStatus)
         .code(httpStatus.hashCode())
         .message(httpStatus.getReasonPhrase())
-        .data(null)
+        .data(diary)
         .build();
 
-
+    log.info("customResponseEntity.getHttpStatus():{}",customResponseEntity.getHttpStatus());
     return new ResponseEntity<>(customResponseEntity,httpStatus);
   }
+
+  //검증 통과 시 상세 페이지 이동
+  @GetMapping("/detail/{id}")
+  public String goDetail(@PathVariable long id){
+    return "diary/detail";
+  }
+
+
 
   //다이어리 생성
   //로그인 유저에 속한 다이어리를 생성한다.
