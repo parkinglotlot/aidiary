@@ -1,5 +1,16 @@
 package com.aidiary.diary.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import javax.naming.AuthenticationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.jpa.Diary;
@@ -9,16 +20,8 @@ import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import javax.naming.AuthenticationException;
+
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -34,6 +37,7 @@ public class DiaryService {
 
     try {
       //pageRequestDTO 설정
+      log.info("returnDiaries:{}",curPage);
       PageRequestDTO pageRequestDTO = new PageRequestDTO(curPage,pageSize);
 
       // 유저에 맞는 다이어리 리스트 반환

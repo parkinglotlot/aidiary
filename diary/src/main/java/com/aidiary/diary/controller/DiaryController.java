@@ -1,18 +1,9 @@
 package com.aidiary.diary.controller;
 
 
-import com.aidiary.common.service.CommonService;
-import com.aidiary.diary.dto.PageResponseDTO;
-import com.aidiary.diary.jpa.Diary;
-import com.aidiary.diary.service.DiaryService;
-import com.aidiary.user.dto.CustomResponseEntity;
-import com.aidiary.user.jpa.User;
-import com.aidiary.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import javax.naming.AuthenticationException;
-import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
+
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +17,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.slf4j.Logger;
 import org.springframework.web.servlet.View;
+
+import com.aidiary.common.service.CommonService;
+import com.aidiary.diary.dto.PageResponseDTO;
+import com.aidiary.diary.jpa.Diary;
+import com.aidiary.diary.service.DiaryService;
+import com.aidiary.user.dto.CustomResponseEntity;
+import com.aidiary.user.jpa.User;
+import com.aidiary.user.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Controller
@@ -56,7 +58,7 @@ public class DiaryController {
       @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "") String filter)
       throws AuthenticationException {
 
-//    log.info("로그1");
+
 
     // 로그인 유저 validation
 //    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId());
@@ -85,10 +87,12 @@ public class DiaryController {
   }
 
   //다이어리 상세 페이지 여부 반환
-  @GetMapping("/returnDetail/{id}")
+  //읽기 모드
+  @GetMapping("/readDetail/{id}")
   @ResponseBody
   public ResponseEntity<CustomResponseEntity> isDetail(HttpServletRequest request, @PathVariable long id) {
 
+    log.info("로그1");
     HttpSession session = request.getSession();
     // 현재 로그인된 아이디 가져오기
     String loginId = String.valueOf(session.getAttribute("loginId"));
@@ -106,7 +110,9 @@ public class DiaryController {
 
 
 
+
     if(diary != null) {
+      diary.setMode("READ"); // 읽기 모드
       httpStatus = HttpStatus.OK;
       log.info("diary:{}",diary.getTitle());
     }
@@ -123,10 +129,12 @@ public class DiaryController {
   }
 
   //검증 통과 시 상세 페이지 이동
-  @GetMapping("/detail/{id}")
+  // 조회(Read)
+  @GetMapping("/detail/read/{id}")
   public String goDetail(@PathVariable long id){
     return "diary/detail";
   }
+
 
 
 

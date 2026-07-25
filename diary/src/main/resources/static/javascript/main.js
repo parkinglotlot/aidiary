@@ -128,7 +128,7 @@ function readDiaries(curPage, pageSize, filter) {
       params: {
         curPage: curPage,
         pageSize: pageSize,
-        filter: filter
+        filter: filter,
       },
     })
     .then(function (response) {
@@ -159,7 +159,6 @@ function readDiaries(curPage, pageSize, filter) {
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
-
   searchBtn = document.getElementById("btnSearch");
   diaryList = document.getElementById("diaryList");
   realDiaryList = document.createElement("table");
@@ -173,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "</thead>\n" +
     "\n";
   pagination = document.getElementById("pagination");
-
 
   realDiaryList.className = "diary-table";
 
@@ -229,33 +227,21 @@ document.addEventListener("DOMContentLoaded", function () {
       // alert("!");
       readDiaries(curPage, pageSize, filter);
     }
-
   });
 
   //trTag 클릭
-  diaryList.addEventListener("click",function(e){
+  diaryList.addEventListener("click", function (e) {
     // console.log("e.target.closest(\"tr\")",e.target.closest("tr").id);
     let id = e.target.closest("tr").id;
-    if(id != null){
+    if (id != null) {
       //해당 row의 id 존재
-      axios.get(`/diary/returnDetail/${id}`,{
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-      }).then(function(response){
-        if (response.status !== 200){
-          Swal.fire({
-                      title: "에러 발생",
-                      text: "데이터를 불러올 수 없습니다.",
-                      type: "error",
-                    })
-        }
-        console.log("성공?",response);
-        location.href = `/diary/detail/${id}`;
-      })
+      location.href = `/diary/detail/read/${id}`;
+    } else {
+      Swal.fire({
+        title: "에러 발생",
+        text: "데이터를 불러올 수 없습니다.",
+        type: "error",
+      });
     }
-
-  })
-
+  });
 });

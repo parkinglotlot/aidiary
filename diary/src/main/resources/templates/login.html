@@ -1,52 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>login</title>
-   <link rel="stylesheet" th:href="@{/css/login-style.css}">
+  <head>
+    <meta charset="UTF-8" />
+    <title>login</title>
+    <link rel="stylesheet" th:href="@{/css/login-style.css}" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
     <script th:src="@{/javascript/login.js}"></script>
     <script type="text/javascript" src="js/jquery-3.7.1.min.js"></script>
-</head>
-<body>
-
-<div class="login-wrapper">
-        <div class="login-box">
-            <div class="login-header">
-                <h2>AI Diary</h2>
-                <p>서비스 이용을 위해 로그인해주세요.</p>
-            </div>
-
-                <div th:if="${param.error}" class="error-msg">
-                    아이디 또는 비밀번호가 일치하지 않습니다.
-                </div>
-
-                <div class="input-group">
-                    <label for="loginId">아이디</label>
-                    <input type="text" id="loginId" name="loginId" placeholder="loginId" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="password">비밀번호</label>
-                    <input type="password" id="password" name="password" placeholder="password"
-                           required>
-                </div>
-
-                <div class="options">
-                    <label><input type="checkbox" name="remember-me"> 로그인 유지</label>
-                    <a href="#">비밀번호 찾기</a>
-                </div>
-
-                <button type="button" class="login-btn" id = "loginBtn">로그인</button>
-
-
-            <div class="login-footer">
-                <span>계정이 없으신가요? <a href="#">회원가입</a></span>
-            </div>
+  </head>
+  <body>
+    <div class="login-wrapper">
+      <div class="login-box">
+        <div class="login-header">
+          <h2>AI Diary</h2>
+          <p>서비스 이용을 위해 로그인해주세요.</p>
         </div>
-    </div>
 
-</body>
+        <div th:if="${param.error}" class="error-msg">
+          아이디 또는 비밀번호가 일치하지 않습니다.
+        </div>
+
+        <div class="input-group">
+          <label for="loginId">아이디</label>
+          <input
+            type="text"
+            id="loginId"
+            name="loginId"
+            placeholder="loginId"
+            required
+          />
+        </div>
+
+        <div class="input-group">
+          <label for="password">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="password"
+            required
+          />
+        </div>
+
+        <div class="options">
+          <label
+            ><input type="checkbox" name="remember-me" /> 로그인 유지</label
+          >
+          <a href="#">비밀번호 찾기</a>
+        </div>
+
+        <button type="button" class="login-btn" id="loginBtn">로그인</button>
+
+        <div class="login-footer">
+          <span>계정이 없으신가요? <a href="#">회원가입</a></span>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

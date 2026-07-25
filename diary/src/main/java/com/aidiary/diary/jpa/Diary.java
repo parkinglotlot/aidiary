@@ -4,11 +4,14 @@ import com.aidiary.user.jpa.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
+
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +47,9 @@ public class Diary {
   @ManyToOne
   @JoinColumn(name="writer_id", nullable = false)
   private User writer;
+
+  @Transient
+  private String mode;
 
   public Diary(String title, String content, LocalDateTime date){
     this.title = title;

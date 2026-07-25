@@ -1,31 +1,27 @@
 package com.aidiary.user.service;
 
-import com.aidiary.user.dto.CustomResponseEntity;
-import com.aidiary.user.dto.MemberShipDTO;
-import com.aidiary.user.dto.CustomException;
-import com.aidiary.user.jpa.User;
-import com.aidiary.user.repository.UserRepository;
-//import com.aidiary.user.util.SecurityConfig;
-import com.aidiary.user.util.Util;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.tomcat.util.codec.binary.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
+
+import com.aidiary.user.dto.CustomException;
+import com.aidiary.user.dto.CustomResponseEntity;
+import com.aidiary.user.dto.MemberShipDTO;
+import com.aidiary.user.jpa.User;
+import com.aidiary.user.repository.UserRepository;
+import com.aidiary.user.util.Util;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor

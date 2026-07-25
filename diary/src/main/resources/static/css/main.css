@@ -141,7 +141,7 @@ button:hover {
   background-color: #fff;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* 헤더 스타일 */
@@ -163,14 +163,13 @@ button:hover {
   transition: 0.2s;
 }
 
-
 /* 상세 페이지 css */
 
 .diary-detail-card {
   padding: 40px;
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .diary-detail-header {
@@ -334,4 +333,9 @@ button:hover {
   margin: 0;
   line-height: 1.7;
   color: #555;
+}
+
+/* 숨기기 */
+.hidden {
+  display: none !important;
 }
