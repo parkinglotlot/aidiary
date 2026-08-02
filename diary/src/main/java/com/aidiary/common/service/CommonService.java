@@ -59,6 +59,7 @@ public class CommonService {
 
     // 로그인 유저 존재 확인
     log.info("log2:{}",error);
+    log.info("sessionLoginId:{}",sessionLoginId);
     User user = userRepository.getUserByLoginId(sessionLoginId);
     log.info("log3:{}",error);
 

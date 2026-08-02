@@ -1,24 +1,5 @@
 package com.aidiary.diary;
 
-import com.aidiary.diary.dto.PageRequestDTO;
-import com.aidiary.diary.jpa.Diary;
-import com.aidiary.diary.mapper.DiaryMapper;
-import com.aidiary.diary.mapper.DiaryRepository;
-import com.aidiary.user.dto.CustomResponseEntity;
-import com.aidiary.user.dto.MemberShipDTO;
-import com.aidiary.user.dto.CustomException;
-import com.aidiary.user.jpa.User;
-import com.aidiary.user.repository.UserRepository;
-//import com.aidiary.user.util.SecurityConfig;
-import com.aidiary.user.service.UserService;
-import com.aidiary.user.util.Util;
-import com.aidiary.user.util.UtilService;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
-import java.security.Key;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,15 +7,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+
+import com.aidiary.diary.dto.PageRequestDTO;
+import com.aidiary.diary.jpa.Diary;
+import com.aidiary.diary.mapper.DiaryMapper;
+import com.aidiary.diary.mapper.DiaryRepository;
+import com.aidiary.user.dto.CustomException;
+import com.aidiary.user.dto.CustomResponseEntity;
+import com.aidiary.user.dto.MemberShipDTO;
+import com.aidiary.user.jpa.User;
+import com.aidiary.user.repository.UserRepository;
+import com.aidiary.user.util.Util;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
+
 
 @SpringBootTest
 class DiaryApplicationTests {
@@ -542,6 +542,12 @@ class DiaryApplicationTests {
 		int returnValue = diaryMapper.totalCntTest(pageRequestDTO,user);
 		log.info("returnValue:{}",returnValue);
 
+	}
+
+	@Test
+	public void selectMaxId(){
+		int maxId = diaryMapper.maxDiaryId();
+		log.info("maxId:{}",maxId);
 	}
 
 

@@ -55,19 +55,17 @@ public class DiaryController {
   @ResponseBody
   @GetMapping("/readCustom")
   public ResponseEntity<CustomResponseEntity> readDiary(HttpServletRequest request,
-      @RequestParam(defaultValue = "1") int curPage, @RequestParam(defaultValue = "10") int pageSize, @RequestParam(defaultValue = "") String filter)
+      @RequestParam(value = "curPage", defaultValue = "1") int curPage, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "filter", defaultValue = "") String filter)
       throws AuthenticationException {
 
-
-
-    // 로그인 유저 validation
-//    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId());
-//    log.info("sessionLoginId 확인 중:{}",curUser.getLoginId() + sessionLoginId);
-//    commonService.validateUser(sessionLoginId,loginId);
+        // log.info("curPage:{}",curPage);
+        // log.info("pageSize:{}",pageSize);
+        // log.info("filter:{}",filter);
 
     String sessionLoginId = String.valueOf(request.getSession().getAttribute("loginId"));
 
     User curUser = commonService.validateUserEmpty(sessionLoginId);
+    // log.info("curUser:{}",curUser);
 
     // 프론트에 반환할 (리스트를 포함한) paginationDTO 생성 (서비스단에서 에러 핸들링 포함)
 
@@ -135,6 +133,13 @@ public class DiaryController {
     return "diary/detail";
   }
 
+  // @GetMapping("/createId")
+  // @ResponseBody
+  // public CustomResponseEntity(){
+  //   return null;
+  // }
+
+  // @GetMapping("/detail/create")
 
 
 

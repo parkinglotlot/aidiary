@@ -1,7 +1,11 @@
 //검색란
 let filter = "";
+
 //검색 버튼
 let searchBtn;
+
+// 글쓰기 버튼
+let btnWrite;
 
 // 다이어리 리스트 불러오기
 let diaryList;
@@ -124,6 +128,8 @@ function readDiaries(curPage, pageSize, filter) {
     .get("/diary/readCustom", {
       headers: {
         "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
       },
       params: {
         curPage: curPage,
@@ -159,6 +165,7 @@ function readDiaries(curPage, pageSize, filter) {
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
+  btnWrite = document.getElementById("btnWrite");
   searchBtn = document.getElementById("btnSearch");
   diaryList = document.getElementById("diaryList");
   realDiaryList = document.createElement("table");
@@ -243,5 +250,10 @@ document.addEventListener("DOMContentLoaded", function () {
         type: "error",
       });
     }
+  });
+
+  //  글쓰기 버튼 클릭
+  btnWrite.addEventListener("click", function (e) {
+    e.preventDefault();
   });
 });
