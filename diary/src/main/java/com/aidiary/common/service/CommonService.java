@@ -5,16 +5,15 @@ import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+
 import javax.naming.AuthenticationException;
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Http;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BeanPropertyBindingResult;
+
 import org.springframework.web.servlet.View;
 
 import org.springframework.validation.Errors;
@@ -58,26 +57,26 @@ public class CommonService {
 
 
     // 로그인 유저 존재 확인
-    log.info("log2:{}",error);
-    log.info("sessionLoginId:{}",sessionLoginId);
+    // log.info("log2:{}",error);
+    // log.info("sessionLoginId:{}",sessionLoginId);
     User user = userRepository.getUserByLoginId(sessionLoginId);
-    log.info("log3:{}",error);
+    // log.info("log3:{}",error);
 
     //httpstatus 세팅
 //    HttpStatus httpStatusBadRequest = HttpStatus.BAD_REQUEST;
 //    HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
 
-    log.info("log4:{}",error);
+    // log.info("log4:{}",error);
 
-    log.info("user:{}",user);
-    log.info("sessionLoginId:{}",sessionLoginId);
+    // log.info("user:{}",user);
+    // log.info("sessionLoginId:{}",sessionLoginId);
 
     if(user == null){
       HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
       throw new CustomException(new CustomResponseEntity(serverError.getReasonPhrase(),serverError.hashCode(),serverError,serverError),serverError);
     }
 
-    log.info("log6:{}",error);
+    // log.info("log6:{}",error);
 
     return user;
 

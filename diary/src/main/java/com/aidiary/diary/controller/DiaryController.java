@@ -71,7 +71,7 @@ public class DiaryController {
 
 //    log.info("curUser:{}",curUser);
     PageResponseDTO pageResponseDTO =  diaryService.returnDiaries(curPage,pageSize,filter,curUser);
-    log.info("pageResponseDTO:{}",pageResponseDTO);
+    // log.info("pageResponseDTO:{}",pageResponseDTO);
     // 최종 상태 반환
     HttpStatus httpStatusOK = HttpStatus.OK;
 
@@ -88,9 +88,9 @@ public class DiaryController {
   //읽기 모드
   @GetMapping("/readDetail/{id}")
   @ResponseBody
-  public ResponseEntity<CustomResponseEntity> isDetail(HttpServletRequest request, @PathVariable long id) {
+  public ResponseEntity<CustomResponseEntity> isDetail(HttpServletRequest request, @PathVariable(name = "id") long id) {
 
-    log.info("로그1");
+    // log.info("로그1");
     HttpSession session = request.getSession();
     // 현재 로그인된 아이디 가져오기
     String loginId = String.valueOf(session.getAttribute("loginId"));
@@ -129,7 +129,13 @@ public class DiaryController {
   //검증 통과 시 상세 페이지 이동
   // 조회(Read)
   @GetMapping("/detail/read/{id}")
-  public String goDetail(@PathVariable long id){
+  public String goDetail(@PathVariable(name = "id") long id){
+    return "diary/detail";
+  }
+
+  //Create 모드로 상세 페이지 이동
+  @GetMapping("/detail/create/0")
+  public String goCreate(){
     return "diary/detail";
   }
 
@@ -170,8 +176,8 @@ public class DiaryController {
 
   //로그인 유저가 속하고, 선택한 다이어리 수정
   @ResponseBody
-  @PutMapping("/modify")
-  public ResponseEntity<CustomResponseEntity> modifyDiary(HttpServletRequest request,@RequestBody Diary diary)
+  @PutMapping("/modify/{id}")
+  public ResponseEntity<CustomResponseEntity> modifyDiary(HttpServletRequest request,@PathVariable(name = "id") Long id, @RequestBody Diary diary)
       throws AuthenticationException {
     String sessionId = "";
     User user = null;
@@ -179,17 +185,25 @@ public class DiaryController {
     HttpSession session = request.getSession(true);
     sessionId = (String) session.getAttribute("loginId");
 
+
 //    log.info("log1 : {}",error);
 //    log.info("sessionId : {}",sessionId);
     user = commonService.validateUserEmpty(sessionId);
+    log.info("user : {}",user);
 
 
     boolean result = false;
 
 
     try {
+      // 이미 존재하는 다이어리 가져오기
+      Diary existingDiary = diaryService.detailOk(sessionId,id);
 
-      result = diaryService.updateDiary(diary,user);
+      // 기존 다이어리 내용을 새 다이어리 내용으로 업데이트
+      existingDiary.setContent(diary.getContent());
+      existingDiary.setTitle(diary.getTitle());
+
+      result = diaryService.updateDiary(existingDiary,user);
 
     } catch (Exception e) {
       throw new RuntimeException();
@@ -208,8 +222,8 @@ public class DiaryController {
 
   // 로그인 유저가 택한 다이어리 삭제
   @ResponseBody
-  @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-  public ResponseEntity<CustomResponseEntity> deleteDiary(HttpServletRequest request, @RequestBody Diary diary)
+  @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+  public ResponseEntity<CustomResponseEntity> deleteDiary(HttpServletRequest request, @PathVariable(name = "id") Long id, @RequestBody Diary diary)
       throws AuthenticationException {
 
     log.info("디버깅:{}",diary);

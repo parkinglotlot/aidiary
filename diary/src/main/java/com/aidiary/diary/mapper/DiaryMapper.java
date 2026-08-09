@@ -19,7 +19,7 @@ public interface DiaryMapper {
 
   // 해당되는 전체 일기장 리스트 가져오기
   @Select("SELECT count(id) from diary WHERE writer_id = #{user.id} and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' or title like concat('%',#{pageRequestDTO.filter},'%'))")
-  int totalCnt(PageRequestDTO pageRequestDTO, User user);
+  int totalCnt(@Param("pageRequestDTO")PageRequestDTO pageRequestDTO, @Param("user")User user);
 
   //검색어 Test
   @Select("SELECT count(id) from diary WHERE writer_id = #{user.id} and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' or title like concat('%',#{pageRequestDTO.filter},'%'))")
@@ -33,18 +33,18 @@ public interface DiaryMapper {
       + "</if>"
       + "limit #{pageRequestDTO.offset}, #{pageRequestDTO.pageSize}"
       + "</script>")
-  List<Diary> selectRequestPaginationList(@org.springframework.data.repository.query.Param("pageRequestDTO") PageRequestDTO pageRequestDTO, @org.springframework.data.repository.query.Param("user") User user);
+  List<Diary> selectRequestPaginationList(@Param("pageRequestDTO") PageRequestDTO pageRequestDTO, @Param("user") User user);
 
   @Select("SELECT id,content,date,title,ai_analysis,writer_id FROM diary WHERE writer_id = #{user.id} AND id = #{diaryId}")
-  Diary getDiaryByIdLoginId(long diaryId, User user);
+  Diary getDiaryByIdLoginId(@Param("diaryId") long diaryId, @Param("user") User user);
 
   @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")
-  int updateDiary(Diary diary, User user);
+  int updateDiary(@Param("diary") Diary diary, @Param("user")User user);
 
   @Update("update diary set ai_analysis = #{diary.aiAnalysis} where writer_id = #{user.id} and id = #{diary.id}")
-  int updateAiAnalysis(Diary diary, User user);
+  int updateAiAnalysis(@Param("diary") Diary diary, User user);
 
-  @Select("select coalesce(max(id),0) + 1 from diary")
+  @Select("select coalesce(max(id),0) from diary")
   int maxDiaryId();
 
 

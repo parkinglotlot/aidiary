@@ -255,5 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
   //  글쓰기 버튼 클릭
   btnWrite.addEventListener("click", function (e) {
     e.preventDefault();
+    window.location.href = "/diary/detail/create/0";
   });
 });

@@ -23,6 +23,8 @@ import com.aidiary.user.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Service
 public class DiaryService {
@@ -37,22 +39,23 @@ public class DiaryService {
 
         try {
             //pageRequestDTO 설정
-            log.info("curPage:{}", curPage);
+            // log.info("curPage:{}", curPage);
             PageRequestDTO pageRequestDTO = new PageRequestDTO(curPage, pageSize);
 
             // 유저에 맞는 다이어리 리스트 반환
-            log.info("returnDiaries:{}", pageRequestDTO);
-            log.info("filter:{}", filter);
+            // log.info("returnDiaries:{}", pageRequestDTO);
+            // log.info("filter:{}", filter);
             pageRequestDTO.setFilter(filter); // 검색어 세팅
-            // log.info("error 발생1");
+            // log.info("error 발생1 filter:{}",filter);
             List<Diary> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO, user);
-            // log.info("error 발생2");
+            log.info("error 발생2 pageRequestDTO :{}",pageRequestDTO);
+            //  log.info("error 발생2 user :{}",user);
             //총 다이어리 수 반환
             int totalDiaries = diaryMapper.totalCnt(pageRequestDTO, user);
-            // log.info("error 발생3");
+            // log.info("error 발생3 totalDiaries:{}",totalDiaries);
             //pageResponseDTO 세팅 및 반환
             PageResponseDTO pageResponseDTO = new PageResponseDTO(diaryList, pageRequestDTO, totalDiaries);
-            // log.info("error 발생4");
+            // log.info("error 발생4 pageResponseDTO:{}", pageResponseDTO);
             return pageResponseDTO;
         } catch (Exception e) {
             log.error("returnDiaries 예외 발생: ", e);
@@ -101,17 +104,22 @@ public class DiaryService {
         //다이어리에 유저 세팅
         diary.setWriter(user);
 
+        //다이어리 date 세팅
+        LocalDateTime now = LocalDateTime.now();
+        diary.setDate(now);
+
         int insertResult = 0;
 
         try {
             insertResult = diaryMapper.isInsertDiaryList(diary);
+             if (insertResult < 1) {
+            throw new CustomException(new CustomResponseEntity(httpStatus.getReasonPhrase(), httpStatus.value(), null, httpStatus), httpStatus);
+        }
         } catch (Exception e) {
             throw new CustomException(new CustomResponseEntity(httpStatus.getReasonPhrase(), httpStatus.value(), null, httpStatus), httpStatus);
         }
 
-        if (insertResult < 1) {
-            throw new CustomException(new CustomResponseEntity(httpStatus.getReasonPhrase(), httpStatus.value(), null, httpStatus), httpStatus);
-        }
+       
 
         return insertResult;
     }
