@@ -95,6 +95,7 @@ function createFunction() {
     })
     .then(function (response) {
       console.log(response);
+      return response.json();
     })
     .then(function (result) {
       console.log("result:", result);
@@ -106,7 +107,7 @@ function createFunction() {
       });
       //등록 후 상세페이지 모드 변경
       mode = "READ";
-      // readFunction(result.data.id);
+      location.href = `/diary/detail/read/${result.data}`; //등록 후 상세페이지 이동
     })
     .catch(function (error) {
       swal.fire({

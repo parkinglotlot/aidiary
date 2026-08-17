@@ -167,10 +167,11 @@ public class DiaryController {
     User curUser = commonService.validateUserEmpty(sessionLoginId);
 
     int insertDiary =  diaryService.insertDiary(diary,curUser);
-
+    // log.info("insertDiary: {}", insertDiary);
+    int newDiaryId = diaryService.newDiaryId();
     HttpStatus httpStatusOK = HttpStatus.OK;
-    CustomResponseEntity customResponseEntity = new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),insertDiary,httpStatusOK);
-
+    CustomResponseEntity customResponseEntity = new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),newDiaryId,httpStatusOK);
+    // log.info("customResponseEntity: {}", customResponseEntity);
     return new ResponseEntity<>(customResponseEntity,httpStatusOK);
   }
 
