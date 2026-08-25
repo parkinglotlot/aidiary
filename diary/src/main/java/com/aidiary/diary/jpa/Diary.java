@@ -1,5 +1,6 @@
 package com.aidiary.diary.jpa;
 
+import jakarta.persistence.FetchType;
 import com.aidiary.user.jpa.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
@@ -14,10 +15,8 @@ import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -37,6 +36,8 @@ public class Diary {
   @Column
   private String content;
 
+
+
   @Column
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
@@ -44,9 +45,9 @@ public class Diary {
   @Column
   private String aiAnalysis;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name="writer_id", nullable = false)
-  private User writer;
+  private User user;
 
   @Transient
   private String mode;

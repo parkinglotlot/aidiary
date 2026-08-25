@@ -1,6 +1,6 @@
 package com.aidiary.ai.service;
 
-import com.aidiary.diary.jpa.Diary;
+import com.aidiary.diary.dto.DiaryDTO;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class OpenAiService {
         .build();
   }
 
-  public String callGPT(Diary diary){
+  public String callGPT(DiaryDTO diary){
 //    log.info("error1:{}",prompt);
     Map<String,Object> requestBody = new HashMap<>();
 //    log.info("error2:{}",prompt);

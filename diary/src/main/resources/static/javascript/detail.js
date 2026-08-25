@@ -33,6 +33,12 @@ let editClassList;
 //저장버튼 클래스 리스트
 let saveClassList;
 
+// ai 감정분석 버튼
+let btnAnalyzeEmotion;
+
+// ai 감정분석 결과
+let aiComment;
+
 //URL에서 모드 추출
 function getModeFromUrl() {
   let path = location.pathname;
@@ -57,11 +63,12 @@ function readFunction(id) {
       diaryTitle.innerText = result.data.title;
       diaryDate.innerText = result.data.date;
       diaryContent.innerText = result.data.content;
-      diaryWriter.innerText = result.data.writer;
+      diaryWriter.innerText = result.data.loginId; //작성자 아이디 세팅
       saveClassList.add("hidden"); //저장버튼 비활성화
       editClassList.remove("hidden"); //수정버튼 활성화
       diaryTitle.setAttribute("contenteditable", false); // editable false
       diaryContent.setAttribute("contenteditable", false); // editable false
+      aiComment.innerText = result.data.aiAnalysis; //감정분석 결과 세팅
     })
     .catch(function (error) {
       console.log(error);
@@ -99,15 +106,19 @@ function createFunction() {
     })
     .then(function (result) {
       console.log("result:", result);
-      swal.fire({
-        title: "등록 성공",
-        text: "등록되었습니다",
-        type: "success",
-        icon: "success",
-      });
-      //등록 후 상세페이지 모드 변경
-      mode = "READ";
-      location.href = `/diary/detail/read/${result.data}`; //등록 후 상세페이지 이동
+      swal
+        .fire({
+          title: "등록 성공",
+          text: "등록되었습니다",
+          type: "success",
+          icon: "success",
+          timer: 2000,
+        })
+        .then(function () {
+          //등록 후 상세페이지 모드 변경
+          mode = "READ";
+          location.href = `/diary/detail/read/${result.data}`; //등록 후 상세페이지 이동
+        });
     })
     .catch(function (error) {
       swal.fire({
@@ -130,22 +141,43 @@ function editFunction() {
 
 // // Delete 버튼
 function deleteFunction(id) {
+  console.log(diaryWriter.innerText);
   window
     .fetch(`/diary/delete/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: id,
+        loginId: diaryWriter.innerText,
+      }),
     })
     .then(function (response) {
-      console.log(response);
+      console.log(response.json());
     })
     .then(function (result) {
       console.log(result);
+      swal
+        .fire({
+          title: "삭제 성공",
+          text: "삭제되었습니다",
+          type: "success",
+          timer: 2000,
+        })
+        .then(function () {
+          // 삭제 후 다이어리 목록 페이지로 이동
+          window.location.href = "/diary/goHome";
+        });
+    })
+    .catch(function (error) {
+      console.log(error);
       swal.fire({
-        title: "삭제 성공",
-        text: "삭제되었습니다",
-        type: "success",
+        title: "삭제 실패",
+        text: "삭제에 실패했습니다.",
+        type: "error",
+        icon: "error",
       });
-      // 삭제 후 다이어리 목록 페이지로 이동
-      window.location.href = "/diary/readCustom";
     });
 }
 
@@ -187,6 +219,35 @@ function saveFunction(id) {
     });
 }
 
+function analyzeEmtion() {
+  window
+    .fetch("/api/gpt/call", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: diaryContent.innerText,
+      }),
+    })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (result) {
+      console.log(result);
+      aiComment.innerText = result.data;
+    })
+    .catch(function (error) {
+      console.log(error);
+      swal.fire({
+        title: "분석 실패",
+        text: "분석에 실패했습니다.",
+        type: "error",
+        icon: "error",
+      });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   console.log(id);
 
@@ -200,6 +261,8 @@ document.addEventListener("DOMContentLoaded", function () {
   btnDelete = document.getElementById("btnDelete");
   editClassList = btnEdit.classList;
   saveClassList = btnSave.classList;
+  btnAnalyzeEmotion = document.getElementById("btnAnalyzeEmotion");
+  aiComment = document.getElementById("aiComment");
 
   // 모드 설정
   getModeFromUrl();
@@ -238,4 +301,10 @@ document.addEventListener("DOMContentLoaded", function () {
     deleteFunction(id);
   });
   // document.getElementById("btnEdit")
+
+  // ai 감정분석 버튼 클릭 이벤트
+  btnAnalyzeEmotion.addEventListener("click", function () {
+    // ai 감정분석 로직 구현
+    analyzeEmtion();
+  });
 });

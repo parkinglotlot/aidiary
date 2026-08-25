@@ -33,7 +33,7 @@ public class AllExceptionHandlers {
   @ExceptionHandler(RuntimeException.class)
   public CustomException exceptionRuntime(Exception e){
     HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    log.error("AuthenticationException 발생: ", e);  // 스택트레이스 전체 출력
+    log.error("RuntimeException 발생: ", e);  // 스택트레이스 전체 출력
     return new CustomException(new CustomResponseEntity(),httpStatus);
   }
 

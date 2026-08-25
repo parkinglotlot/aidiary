@@ -40,7 +40,7 @@ public class User {
   @Column
   private LocalDate birthday;
 
-  @OneToMany(mappedBy = "writer")
+  @OneToMany(mappedBy = "user")
   private List<Diary> diaries = new ArrayList<>();
 
 

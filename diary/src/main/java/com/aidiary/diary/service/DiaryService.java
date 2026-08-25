@@ -1,5 +1,6 @@
 package com.aidiary.diary.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aidiary.diary.dto.DiaryDTO;
 import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
-import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.mapper.DiaryMapper;
 import com.aidiary.diary.mapper.DiaryRepository;
 import com.aidiary.user.dto.CustomException;
@@ -22,8 +23,6 @@ import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
@@ -47,8 +46,8 @@ public class DiaryService {
             // log.info("filter:{}", filter);
             pageRequestDTO.setFilter(filter); // 검색어 세팅
             // log.info("error 발생1 filter:{}",filter);
-            List<Diary> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO, user);
-            log.info("error 발생2 pageRequestDTO :{}",pageRequestDTO);
+            List<DiaryDTO> diaryList = diaryMapper.selectRequestPaginationList(pageRequestDTO, user);
+            // log.info("error 발생2 pageRequestDTO :{}",pageRequestDTO);
             //  log.info("error 발생2 user :{}",user);
             //총 다이어리 수 반환
             int totalDiaries = diaryMapper.totalCnt(pageRequestDTO, user);
@@ -65,7 +64,7 @@ public class DiaryService {
     }
 
     // 유저에게 맞는 다이어리 반환(로그인 유저 존재 검증 및 반환 + 해당 아이디의 게시글이 유저의 것인지 판단 + 페이지 이동-쿼리스트링 붙힌 상태)
-    public Diary detailOk(String loginId, Long id) {
+    public DiaryDTO detailOk(String loginId, Long id) {
         boolean result = true;
 
         // 로그인 유저 존재 검증
@@ -76,7 +75,7 @@ public class DiaryService {
         }
 
         //해당 아이디의 게시글이 유저의 것인지 판단
-        Diary diary = diaryMapper.getDiaryByIdLoginId(id, user.get());
+        DiaryDTO diary = diaryMapper.getDiaryByIdLoginId(id, user.get());
 
         if (diary == null) {
             result = false;
@@ -97,12 +96,13 @@ public class DiaryService {
 
     // 생성 : 유저에 속한 다이어리 등록
     @Transactional(rollbackFor = Exception.class)
-    public int insertDiary(Diary diary, User user) {
+    public int insertDiary(DiaryDTO diary, User user) {
 
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
         //다이어리에 유저 세팅
-        diary.setWriter(user);
+        diary.setWriterId(user.getId());
+        diary.setLoginId(user.getLoginId());
 
         //다이어리 date 세팅
         LocalDateTime now = LocalDateTime.now();
@@ -126,7 +126,7 @@ public class DiaryService {
 
     // 수정 : 유저에 속한 다이어리 수정
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateDiary(Diary diary, User user) throws AuthenticationException {
+    public boolean updateDiary(DiaryDTO diary, User user) throws AuthenticationException {
         boolean result = false;
 
         if (user == null) {
@@ -152,20 +152,24 @@ public class DiaryService {
 
     // 삭제 : 유저에 속한 다이어리 삭제
     @Transactional(rollbackFor = Exception.class)
-    public boolean deleteDiary(User user, Diary diary) throws AuthenticationException {
-        boolean result = false;
+    public boolean deleteDiary(User user, DiaryDTO diary) throws AuthenticationException {
 
+        log.info("deleteDiary +  user:{}", user);
+        log.info("deleteDiary +  diary:{}", diary);
+    
+
+        boolean result = false;
+        log.info("user 전:{}", user);
         if (user == null) {
+        log.info("user 로그:{}", user);
+
             throw new AuthenticationException();
         }
+        log.info("user 후:{}", user);
 
         int deleteResult = 0;
-
-        try {
-            deleteResult = diaryRepository.deleteDiaryById(diary.getId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        deleteResult = diaryRepository.deleteDiaryById(diary.getId());
+        
 
         if (deleteResult == 1) {
             result = true;
@@ -175,7 +179,14 @@ public class DiaryService {
     }
 
     // 다이어리 AI 분석 내용 저장
-    public int setAiDiary(Diary diary, User user) {
-        return diaryMapper.updateAiAnalysis(diary, user);
+    public int setAiDiary(DiaryDTO diary, User user) {
+        try {
+            return diaryMapper.updateAiAnalysis(diary, user);
+        } catch (Exception e) {
+            log.error("setAiDiary 예외 발생: ", e);
+            HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
+            throw new CustomException(new CustomResponseEntity(), serverError);
+        }
+        
     }
 }

@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.View;
 
 import com.aidiary.common.service.CommonService;
+import com.aidiary.diary.dto.DiaryDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
-import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.service.DiaryService;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
@@ -103,16 +103,14 @@ public class DiaryController {
 
 
     // 다이어리 반환
-    Diary diary =  diaryService.detailOk(loginId,id);
-
-
-
+    DiaryDTO diary =  diaryService.detailOk(loginId,id);
 
 
     if(diary != null) {
       diary.setMode("READ"); // 읽기 모드
       httpStatus = HttpStatus.OK;
       log.info("diary:{}",diary.getTitle());
+      
     }
     log.info("httpStatus:{}",httpStatus);
     customResponseEntity =  CustomResponseEntity.builder()
@@ -154,7 +152,7 @@ public class DiaryController {
   @ResponseBody
   @PostMapping("/create")
   public ResponseEntity<CustomResponseEntity> createDiary(HttpServletRequest request, @RequestBody
-      Diary diary) throws AuthenticationException {
+      DiaryDTO diary) throws AuthenticationException {
 
     HttpSession session =  request.getSession();
     String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
@@ -168,7 +166,7 @@ public class DiaryController {
 
     int insertDiary =  diaryService.insertDiary(diary,curUser);
     // log.info("insertDiary: {}", insertDiary);
-    int newDiaryId = diaryService.newDiaryId();
+    int newDiaryId = diaryService.newDiaryId(); //diary 생성 후, 새로 생성된 다이어리 id 반환
     HttpStatus httpStatusOK = HttpStatus.OK;
     CustomResponseEntity customResponseEntity = new CustomResponseEntity(httpStatusOK.getReasonPhrase(),httpStatusOK.value(),newDiaryId,httpStatusOK);
     // log.info("customResponseEntity: {}", customResponseEntity);
@@ -178,7 +176,7 @@ public class DiaryController {
   //로그인 유저가 속하고, 선택한 다이어리 수정
   @ResponseBody
   @PutMapping("/modify/{id}")
-  public ResponseEntity<CustomResponseEntity> modifyDiary(HttpServletRequest request,@PathVariable(name = "id") Long id, @RequestBody Diary diary)
+  public ResponseEntity<CustomResponseEntity> modifyDiary(HttpServletRequest request,@PathVariable(name = "id") Long id, @RequestBody DiaryDTO diary)
       throws AuthenticationException {
     String sessionId = "";
     User user = null;
@@ -198,7 +196,7 @@ public class DiaryController {
 
     try {
       // 이미 존재하는 다이어리 가져오기
-      Diary existingDiary = diaryService.detailOk(sessionId,id);
+      DiaryDTO existingDiary = diaryService.detailOk(sessionId,id);
 
       // 기존 다이어리 내용을 새 다이어리 내용으로 업데이트
       existingDiary.setContent(diary.getContent());
@@ -223,8 +221,8 @@ public class DiaryController {
 
   // 로그인 유저가 택한 다이어리 삭제
   @ResponseBody
-  @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<CustomResponseEntity> deleteDiary(HttpServletRequest request, @PathVariable(name = "id") Long id, @RequestBody Diary diary)
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<CustomResponseEntity> deleteDiary(HttpServletRequest request, @PathVariable(name = "id") Long id, @RequestBody DiaryDTO diary)
       throws AuthenticationException {
 
     log.info("디버깅:{}",diary);
@@ -232,11 +230,13 @@ public class DiaryController {
     // 유저 validation
     HttpSession session = request.getSession(true);
     String sessionLoginId = String.valueOf(session.getAttribute("loginId"));
+    // log.info("sessionLoginId:{}",sessionLoginId); //정상
     User user =  commonService.validateUserEmpty(sessionLoginId);
+    log.info("user:{}",user); //정상
 
     boolean deleteResult = false;
 
-
+    log.info("deleteResult 전:{}", deleteResult);
     deleteResult =  diaryService.deleteDiary(user,diary);
 
     HttpStatus status = null;

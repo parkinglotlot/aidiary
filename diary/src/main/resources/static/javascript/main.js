@@ -41,7 +41,7 @@ function getDiariesFromBack(array, realDiaryList) {
     let td1 = document.createElement("td");
     td1.innerHTML = item.title;
     let td2 = document.createElement("td");
-    td2.innerHTML = item.writer;
+    td2.innerHTML = item.loginId;
     // console.log(trTag);
     let td3 = document.createElement("td");
     td3.innerHTML = item.date;
