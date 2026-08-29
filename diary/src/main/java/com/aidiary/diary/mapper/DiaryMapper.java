@@ -26,7 +26,7 @@ public interface DiaryMapper {
   int totalCntTest(@Param("pageRequestDTO") PageRequestDTO pageRequestDTO, @Param("user") User user);
 
   @Select("<script>"
-      + "SELECT a.id,a.content,a.date,a.title,a.ai_analysis,a.writer_id as writerId, u.login_id as loginId, u.full_name as fullName "
+      + "SELECT a.id,a.content,a.date,a.title,a.ai_analysis,a.writer_id as writerId, a.ai_analysis as aiAnalysis, u.login_id as loginId, u.full_name as fullName "
       + "from diary a join user u on a.writer_id = u.id "
       + "WHERE a.writer_id = #{user.id} "
       + "<if test = 'pageRequestDTO.filter != null and pageRequestDTO.filter.trim() !=\"\"'>"
@@ -36,14 +36,14 @@ public interface DiaryMapper {
       + "</script>")
   List<DiaryDTO> selectRequestPaginationList(@Param("pageRequestDTO") PageRequestDTO pageRequestDTO, @Param("user") User user);
 
-  @Select("SELECT a.id,a.content,a.date,a.title,a.ai_analysis,a.writer_id as writerId, u.login_id as loginId, u.full_name as fullName FROM diary a join user u on a.writer_id = u.id WHERE a.writer_id = #{user.id} AND a.id = #{diaryId}")
+  @Select("SELECT a.id,a.content,a.date,a.title,a.ai_analysis,a.writer_id as writerId, a.ai_analysis as aiAnalysis, u.login_id as loginId, u.full_name as fullName FROM diary a join user u on a.writer_id = u.id WHERE a.writer_id = #{user.id} AND a.id = #{diaryId}")
   DiaryDTO getDiaryByIdLoginId(@Param("diaryId") long diaryId, @Param("user") User user);
 
   @Update("update diary set content = #{diary.content}, title = #{diary.title} where writer_id = #{user.id} and id = #{diary.id}")
   int updateDiary(@Param("diary") DiaryDTO diary, @Param("user")User user);
 
   @Update("update diary set ai_analysis = #{diary.aiAnalysis} where writer_id = #{user.id} and id = #{diary.id}")
-  int updateAiAnalysis(@Param("diary") DiaryDTO diary, User user);
+  int updateAiAnalysis(@Param("diary") DiaryDTO diary,@Param("user") User user);
 
   @Select("select coalesce(max(id),0) from diary")
   int maxDiaryId();

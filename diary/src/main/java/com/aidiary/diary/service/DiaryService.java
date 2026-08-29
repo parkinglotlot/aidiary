@@ -1,8 +1,7 @@
 package com.aidiary.diary.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import javax.naming.AuthenticationException;
 
@@ -21,6 +20,8 @@ import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
+
+import com.aidiary.ai.enumeration.Feeling;
 
 import lombok.AllArgsConstructor;
 
@@ -75,14 +76,30 @@ public class DiaryService {
         }
 
         //해당 아이디의 게시글이 유저의 것인지 판단
+        log.info("error1:{}", Error.class);
         DiaryDTO diary = diaryMapper.getDiaryByIdLoginId(id, user.get());
-
+        log.info("error2:{}", Error.class);
         if (diary == null) {
             result = false;
 
         }
 
         if (result) {
+            List<Feeling> feelingList = Arrays.asList(Feeling.values());
+            List<Feeling> diaryFeelings = new ArrayList<>();
+            diary.setFeelingList(diaryFeelings);
+
+            if(diary.getAiAnalysis() != null){
+                 for(Feeling feeling : feelingList){
+                 if( diary.getAiAnalysis().contains(feeling.getCode())){
+                    diaryFeelings.add(feeling);
+                 }
+            }
+
+            }
+
+           
+           
             return diary;
         }
 

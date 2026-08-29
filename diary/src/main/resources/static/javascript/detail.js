@@ -33,11 +33,20 @@ let editClassList;
 //저장버튼 클래스 리스트
 let saveClassList;
 
+//ai 분석 타이틀
+let emotionTitle;
+
+//ai 분석 서브 타이틀
+let emotionDesc;
+
 // ai 감정분석 버튼
 let btnAnalyzeEmotion;
 
 // ai 감정분석 결과
 let aiComment;
+
+// ai 감정 태그 리스트
+let emotionTags;
 
 //URL에서 모드 추출
 function getModeFromUrl() {
@@ -69,10 +78,45 @@ function readFunction(id) {
       diaryTitle.setAttribute("contenteditable", false); // editable false
       diaryContent.setAttribute("contenteditable", false); // editable false
       aiComment.innerText = result.data.aiAnalysis; //감정분석 결과 세팅
+
+      // ai 기본 세팅
+      setAiDefault();
+      // 태그 세팅
+      setAiFeelingTags(result.data.feelingList);
     })
     .catch(function (error) {
       console.log(error);
     });
+}
+
+//ai 분석 기본 세팅
+function setAiDefault() {
+  if (
+    aiComment.innerText != null &&
+    aiComment.innerText.trim() != "" &&
+    aiComment.innerText != "undefined"
+  ) {
+    emotionTitle.innerText = "분석 결과";
+    emotionDesc.innerText =
+      diaryWriter.innerText + "님의 감정을 분석한 결과입니다.";
+  }
+}
+
+//ai feeling 세팅(반환된 다이어리의 감정리스트를 기반으로)
+function setAiFeelingTags(list) {
+  // list = diary 안에 있는 감정 태그 리스트
+
+  // emotiontag안의 기존 span 제거
+  emotionTags.querySelectorAll("span").forEach(function (span) {
+    span.remove();
+  });
+
+  // 감정 태그 안에 리스트로 span 추가
+  list.forEach(function (element) {
+    let spanEl = document.createElement("span");
+    spanEl.textContent = element; // span안에 들어갈 내용
+    emotionTags.appendChild(spanEl);
+  });
 }
 
 //CREATE일때 모드 변경
@@ -219,7 +263,7 @@ function saveFunction(id) {
     });
 }
 
-function analyzeEmtion() {
+function analyzeEmotion() {
   window
     .fetch("/api/gpt/call", {
       method: "POST",
@@ -227,6 +271,8 @@ function analyzeEmtion() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        id: id,
+        loginId: diaryWriter.innerText,
         content: diaryContent.innerText,
       }),
     })
@@ -235,7 +281,11 @@ function analyzeEmtion() {
     })
     .then(function (result) {
       console.log(result);
-      aiComment.innerText = result.data;
+      aiComment.innerText = result.data.aiAnalysis;
+      // ai 분석 기본 세팅
+      setAiDefault();
+      // 태그 세팅
+      setAiFeelingTags(result.data.feelingList);
     })
     .catch(function (error) {
       console.log(error);
@@ -263,6 +313,9 @@ document.addEventListener("DOMContentLoaded", function () {
   saveClassList = btnSave.classList;
   btnAnalyzeEmotion = document.getElementById("btnAnalyzeEmotion");
   aiComment = document.getElementById("aiComment");
+  emotionTitle = document.getElementById("emotionTitle");
+  emotionDesc = document.getElementById("emotionDesc");
+  emotionTags = document.getElementById("emotionTags");
 
   // 모드 설정
   getModeFromUrl();
@@ -305,6 +358,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // ai 감정분석 버튼 클릭 이벤트
   btnAnalyzeEmotion.addEventListener("click", function () {
     // ai 감정분석 로직 구현
-    analyzeEmtion();
+    analyzeEmotion();
   });
 });

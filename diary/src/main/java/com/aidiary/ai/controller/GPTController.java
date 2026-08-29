@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.*;
+
+import com.aidiary.ai.enumeration.Feeling;
 import com.aidiary.ai.service.OpenAiService;
 import com.aidiary.diary.dto.DiaryDTO;
 import com.aidiary.diary.service.DiaryService;
@@ -38,22 +41,25 @@ public class GPTController {
 
     //1. user 검사
     User user = userService.findUserById(loginId);
+   
     HttpStatus httpStatusUnAuth = HttpStatus.UNAUTHORIZED;
-    log.info("에러 전1:{}",Error.class);
+   
     if(user == null || !diary.getLoginId().equals(loginId)) throw new CustomException(new CustomResponseEntity(httpStatusUnAuth.getReasonPhrase(),httpStatusUnAuth.hashCode(),null,httpStatusUnAuth),httpStatusUnAuth);
-    log.info("에러 전2:{}",Error.class);
+    
     // 2. 메세지 전송
     String answer = openAiService.callGPT(diary);
-    log.info("에러 전3:{}",Error.class);
-    diary.setAiAnalysis(answer);
 
+      
+
+   
+   
     //다이어리에 ai 분석 저장
-    boolean aiAnalysis = diaryService.setAiDiary(diary, user) == 1 ? true : false;
+    boolean aiAnalysis = diaryService.setAiDiary(diary, user) == 1;
     HttpStatus httpStatus204 = HttpStatus.NO_CONTENT; //204
     if(!aiAnalysis) throw new CustomException(new CustomResponseEntity(httpStatus204.getReasonPhrase(),httpStatus204.hashCode(),null,httpStatus204),httpStatus204);
 
     HttpStatus httpStatus200 = HttpStatus.OK;
-    return new CustomResponseEntity(httpStatus200.getReasonPhrase(),httpStatus200.hashCode(),answer,httpStatus200);
+    return new CustomResponseEntity(httpStatus200.getReasonPhrase(),httpStatus200.hashCode(),diary,httpStatus200);
   }
 
 

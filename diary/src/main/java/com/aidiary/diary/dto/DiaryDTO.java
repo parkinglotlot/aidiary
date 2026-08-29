@@ -1,18 +1,11 @@
 package com.aidiary.diary.dto;
-import jakarta.persistence.FetchType;
-import com.aidiary.user.jpa.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
 
+import java.util.List;
 import java.time.LocalDateTime;
+
+import com.aidiary.ai.enumeration.Feeling;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +31,11 @@ public class DiaryDTO {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
-  
+  // 감정 분석
   private String aiAnalysis;
+
+  //감정 분석
+  private List<Feeling> feelingList;
 
   // 유저 loginId
   private String loginId;
@@ -49,7 +45,6 @@ public class DiaryDTO {
 
   // 유저 이름
   private String fullName;
-
 
   private String mode;
 

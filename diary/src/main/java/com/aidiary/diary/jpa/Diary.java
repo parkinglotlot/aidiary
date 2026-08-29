@@ -42,7 +42,7 @@ public class Diary {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
-  @Column
+  @Column(length= 5000)
   private String aiAnalysis;
 
   @ManyToOne(fetch = FetchType.EAGER)
