@@ -1,10 +1,13 @@
 package com.aidiary.user.dto;
 
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 @NoArgsConstructor
+@Getter 
 public class CustomException extends RuntimeException{
 
   private CustomResponseEntity customResponseEntity;
@@ -21,9 +24,18 @@ public class CustomException extends RuntimeException{
     // httpStatus 를 반영해 customResponseEntity 세팅
     customResponseEntity.setHttpStatus(httpStatus);
     customResponseEntity.setCode(httpStatus.value());
-    customResponseEntity.setMessage(httpStatus.getReasonPhrase());
 
+    if(this.getMessage() == null || this.getMessage().isEmpty()){
+      customResponseEntity.setMessage(httpStatus.getReasonPhrase());
+    }
+    
+ 
     this.responseEntity = ResponseEntity.status(httpStatus).body(customResponseEntity);
   }
+
+    public ResponseEntity<CustomResponseEntity> getResponseEntity() {
+
+        return this.responseEntity;
+    }
 
 }

@@ -2,28 +2,41 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>사용자 관리</title>
 
+    <!-- 공통 CSS -->
     <link rel="stylesheet" th:href="@{/css/main.css}" />
 
+    <!-- 사용자 관리 CSS -->
+    <link rel="stylesheet" th:href="@{/css/user-management.css}" />
+
+    <!-- axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+    <!-- SweetAlert2 CSS -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
     />
 
+    <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
   </head>
 
   <body>
+    <!-- 관리자 공통 레이아웃 -->
     <div th:replace="~{fragments/layout :: adminLayout(~{::section})}">
       <section class="admin-user-page">
         <div class="admin-page-container">
-          <!-- 페이지 헤더 -->
+          <!-- ========================================
+               페이지 헤더
+          ========================================= -->
           <header class="admin-page-header">
             <div class="admin-page-title-group">
-              <span class="admin-page-eyebrow">USER MANAGEMENT</span>
+              <span class="admin-page-eyebrow"> USER MANAGEMENT </span>
 
               <h2 class="admin-page-title">사용자 관리</h2>
 
@@ -33,89 +46,16 @@
             </div>
           </header>
 
-          <!-- 검색 카드 -->
-          <section class="admin-card user-search-panel">
-            <div class="admin-card-header">
-              <div>
-                <h3 class="admin-card-title">사용자 검색</h3>
-
-                <p class="admin-card-description">
-                  검색 조건을 선택하고 사용자 정보를 조회하세요.
-                </p>
-              </div>
-            </div>
-
-            <div class="admin-card-body">
-              <div class="user-search-form">
-                <!-- 검색 조건 -->
-                <div class="form-group">
-                  <label for="searchType" class="form-label"> 검색 조건 </label>
-
-                  <select id="searchType" name="searchType" class="form-select">
-                    <option value="loginId">아이디</option>
-
-                    <option value="name">이름</option>
-
-                    <option value="email">이메일</option>
-                  </select>
-                </div>
-
-                <!-- 검색어 -->
-                <div class="form-group form-group-grow">
-                  <label for="searchKeyword" class="form-label"> 검색어 </label>
-
-                  <div class="search-input-wrapper">
-                    <input
-                      type="text"
-                      id="searchKeyword"
-                      name="searchKeyword"
-                      class="form-input search-input"
-                      placeholder="검색어를 입력하세요"
-                    />
-                  </div>
-                </div>
-
-                <!-- 상태 -->
-                <div class="form-group">
-                  <label for="userStatus" class="form-label"> 회원 상태 </label>
-
-                  <select id="userStatus" name="userStatus" class="form-select">
-                    <option value="">전체</option>
-
-                    <option value="ACTIVE">정상</option>
-
-                    <option value="INACTIVE">비활성</option>
-
-                    <option value="BLOCKED">차단</option>
-                  </select>
-                </div>
-
-                <!-- 버튼 -->
-                <div class="search-action-group">
-                  <button
-                    type="button"
-                    id="btnSearch"
-                    class="admin-btn admin-btn-primary"
-                  >
-                    검색
-                  </button>
-
-                  <button
-                    type="button"
-                    id="btnReset"
-                    class="admin-btn admin-btn-secondary"
-                  >
-                    초기화
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 사용자 목록 -->
+          <!-- ========================================
+               사용자 목록 카드
+          ========================================= -->
           <section class="admin-card user-list-panel">
-            <!-- 목록 헤더 -->
-            <div class="admin-card-header user-list-toolbar">
+            <!-- ========================================
+                 목록 상단
+                 제목 + 검색
+            ========================================= -->
+            <div class="user-list-toolbar">
+              <!-- 왼쪽 -->
               <div class="user-list-title-group">
                 <h3 class="admin-card-title">사용자 목록</h3>
 
@@ -125,9 +65,59 @@
                   명
                 </p>
               </div>
+
+              <!-- 오른쪽 검색 form -->
+              <!-- <form id="userSearchForm" class="user-search-form"> -->
+              <div id="userSearchForm" class="user-search-form">
+                <!-- 통합 검색 -->
+                <input
+                  type="text"
+                  id="searchKeyword"
+                  name="keyword"
+                  class="form-input search-input"
+                  placeholder="아이디, 이름 또는 이메일 검색"
+                  autocomplete="off"
+                />
+
+                <!-- 회원 상태 -->
+                <select
+                  id="userStatus"
+                  name="status"
+                  class="form-select status-select"
+                >
+                  <option value="">전체</option>
+
+                  <option value="ACTIVE">정상</option>
+
+                  <option value="INACTIVE">비활성</option>
+
+                  <option value="BLOCKED">차단</option>
+                </select>
+
+                <!-- 검색 -->
+                <button
+                  type="button"
+                  id="btnSearch"
+                  class="admin-btn admin-btn-primary"
+                >
+                  검색
+                </button>
+
+                <!-- 초기화 -->
+                <button
+                  type="button"
+                  id="btnReset"
+                  class="admin-btn admin-btn-secondary"
+                >
+                  초기화
+                </button>
+              </div>
+              <!-- </form> -->
             </div>
 
-            <!-- 테이블 -->
+            <!-- ========================================
+                 사용자 테이블
+            ========================================= -->
             <div class="user-table-container">
               <table class="admin-table user-table">
                 <thead>
@@ -140,7 +130,7 @@
 
                     <th>이메일</th>
 
-                    <th class="column-date">가입일</th>
+                    <th class="column-date">생년월일</th>
 
                     <th class="column-status">상태</th>
 
@@ -149,7 +139,14 @@
                 </thead>
 
                 <tbody id="userTableBody">
-                  <!-- 임시 데이터 -->
+                  <!--
+                    ========================================
+                    임시 데이터
+                    실제 API 연동 후 삭제 가능
+                    ========================================
+                  -->
+
+                  <!-- 사용자 1 -->
                   <tr class="user-table-row">
                     <td class="table-index">1</td>
 
@@ -178,6 +175,7 @@
                     </td>
                   </tr>
 
+                  <!-- 사용자 2 -->
                   <tr class="user-table-row">
                     <td class="table-index">2</td>
 
@@ -205,16 +203,43 @@
                       </button>
                     </td>
                   </tr>
+
+                  <!-- 사용자 3 -->
+                  <tr class="user-table-row">
+                    <td class="table-index">3</td>
+
+                    <td class="user-login-id">user03</td>
+
+                    <td class="user-name">이영희</td>
+
+                    <td class="user-email">user03@example.com</td>
+
+                    <td class="user-created-at">2026-08-22</td>
+
+                    <td>
+                      <span class="status-badge status-badge-inactive">
+                        비활성
+                      </span>
+                    </td>
+
+                    <td>
+                      <button
+                        type="button"
+                        class="table-action-btn btn-user-detail"
+                        data-user-id="3"
+                      >
+                        상세보기
+                      </button>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
 
-            <!-- 검색 결과 없음 -->
-            <div
-              class="table-empty-state"
-              id="emptyUserList"
-              style="display: none"
-            >
+            <!-- ========================================
+                 사용자 없음
+            ========================================= -->
+            <div class="table-empty-state hidden" id="emptyUserList">
               <div class="table-empty-icon">!</div>
 
               <p class="table-empty-title">검색된 사용자가 없습니다.</p>
@@ -224,31 +249,71 @@
               </p>
             </div>
 
-            <!-- 페이지네이션 -->
+            <!-- ========================================
+                 Pagination
+            ========================================= -->
             <div class="pagination-container">
               <nav
                 class="admin-pagination"
                 id="userPagination"
                 aria-label="사용자 목록 페이지"
               >
-                <button type="button" class="pagination-btn pagination-prev">
-                  이전
+                <!-- 맨 처음 -->
+                <button type="button" class="pagination-btn pagination-first">
+                  &lt;&lt;
                 </button>
 
-                <button type="button" class="pagination-btn active">1</button>
+                <!-- 이전 -->
+                <button type="button" class="pagination-btn pagination-prev">
+                  &lt;
+                </button>
 
-                <button type="button" class="pagination-btn">2</button>
+                <!-- page 1 -->
+                <button
+                  type="button"
+                  class="pagination-btn active"
+                  data-page="1"
+                >
+                  1
+                </button>
 
-                <button type="button" class="pagination-btn">3</button>
+                <!-- page 2 -->
+                <button type="button" class="pagination-btn" data-page="2">
+                  2
+                </button>
 
+                <!-- page 3 -->
+                <button type="button" class="pagination-btn" data-page="3">
+                  3
+                </button>
+
+                <!-- page 4 -->
+                <button type="button" class="pagination-btn" data-page="4">
+                  4
+                </button>
+
+                <!-- page 5 -->
+                <button type="button" class="pagination-btn" data-page="5">
+                  5
+                </button>
+
+                <!-- 다음 -->
                 <button type="button" class="pagination-btn pagination-next">
-                  다음
+                  &gt;
+                </button>
+
+                <!-- 맨 마지막 -->
+                <button type="button" class="pagination-btn pagination-last">
+                  &gt;&gt;
                 </button>
               </nav>
             </div>
           </section>
         </div>
 
+        <!-- ========================================
+             User Management JS
+        ========================================= -->
         <script th:src="@{/javascript/userManagement.js}"></script>
       </section>
     </div>

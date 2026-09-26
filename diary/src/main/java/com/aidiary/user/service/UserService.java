@@ -11,12 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.View;
 
+import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.Util;
+import com.aidiary.user.mapper.UserMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -30,6 +32,7 @@ public class UserService {
   private final UserRepository userRepository;
   private final Util util;
 //  private final SecurityConfig securityConfig;
+  private final UserMapper userMapper;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
   private final View error;
 
@@ -192,6 +195,8 @@ public class UserService {
     return false;
   }
 
+
+ 
 
 
 

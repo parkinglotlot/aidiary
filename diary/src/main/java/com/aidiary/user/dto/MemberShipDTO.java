@@ -13,11 +13,16 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MemberShipDTO {
 
+  private int id;
+  private int ser;
   private String loginId;
   private String password;
   private String verifyPassword;
   private String email;
   private LocalDate birthday;
   private String fullName;
+  private String role;
+  private String state;
+  private String management;
 
 }

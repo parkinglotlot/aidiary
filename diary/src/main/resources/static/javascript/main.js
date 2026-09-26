@@ -27,6 +27,9 @@ const pageSize = 10;
 //전체 게시글 수
 let totalCnt = 0;
 
+// 검색어 필터폼
+let searchKeyword;
+
 function getDiariesFromBack(array, realDiaryList) {
   // let list = '';
   let tBody = document.createElement("tbody");
@@ -165,6 +168,7 @@ function readDiaries(curPage, pageSize, filter) {
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
+  searchKeyword = document.getElementById("searchKeyword");
   btnWrite = document.getElementById("btnWrite");
   searchBtn = document.getElementById("btnSearch");
   diaryList = document.getElementById("diaryList");
@@ -220,12 +224,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  //searchKeyword  엔터
+  searchKeyword.addEventListener("keypress", function (e) {
+    if (e.key == "Enter") {
+      filter = searchKeyword.value;
+      curPage = 1; // 검색 시 항상 1페이지부터 시작
+      realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
+      pagination.innerHTML = ""; //페이지네이션 초기화
+      realDiaryList.insertAdjacentHTML("beforeend", header); // 테이블 헤더만 넣기
+      readDiaries(curPage, pageSize, filter);
+    }
+  });
+
   //searchBtn  클릭
   searchBtn.addEventListener("click", function (e) {
     if (e.target && e.target.id === "btnSearch") {
       console.log("Click!!");
 
-      filter = document.getElementById("searchKeyword").value;
+      filter = searchKeyword.value;
       curPage = 1; // 검색 시 항상 1페이지부터 시작
       realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
       pagination.innerHTML = ""; //페이지네이션 초기화

@@ -36,7 +36,24 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // 사용자관리로 이동
-  userAuth.addEventListener("click", function () {
-    window.location.href = "/userAuth/userAuthAdmin";
+  userAuth.addEventListener("click", function (e) {
+    e.preventDefault();
+    window
+      .fetch("/userAuth/userAuthAdmin", {
+        method: "GET",
+      })
+      .then(function (data) {
+        if (!data.ok) {
+          throw new Error("권한이 없습니다.");
+        }
+        window.location.href = "/userAuth/userAuthAdmin";
+      })
+      .catch(function (error) {
+        swal.fire({
+          title: "권한이 없습니다.",
+          icon: "error",
+        });
+      });
+    // window.location.href = "/userAuth/userAuthAdmin";
   });
 });

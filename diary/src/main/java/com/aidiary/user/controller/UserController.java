@@ -120,6 +120,8 @@ public class UserController {
       throw new CustomException(new CustomResponseEntity(status.getReasonPhrase(),status.hashCode(),null,status),status);
     }
 
+    // (관리자)사용자 목록 가져오기
+
 
   }
 

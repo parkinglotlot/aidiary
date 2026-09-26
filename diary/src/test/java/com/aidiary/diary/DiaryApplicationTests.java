@@ -29,6 +29,8 @@ import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.Util;
 
+import com.aidiary.user.mapper.UserMapper;
+
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.ServletContext;
@@ -58,11 +60,15 @@ class DiaryApplicationTests {
 
 	@Value("${spring.mail.username}")
 	private String emailFrom;
-  @Autowired
-  private HttpSession httpSession;
+
+    @Autowired
+    private HttpSession httpSession;
 
 	@Autowired
 	private DiaryMapper diaryMapper;
+
+	@Autowired
+	private UserMapper userMapper;
 
 
 	@Test
@@ -548,6 +554,33 @@ class DiaryApplicationTests {
 	public void selectMaxId(){
 		int maxId = diaryMapper.maxDiaryId();
 		log.info("maxId:{}",maxId);
+	}
+
+	@Test
+	public void selectUserListTest(){
+		PageRequestDTO pageRequestDTO = new PageRequestDTO(1,10);
+		pageRequestDTO.setFilter("ujin");
+		pageRequestDTO.setFilter2("ACTIVE");
+
+		log.info("pageRequestDTO:{}",pageRequestDTO);
+
+		
+
+		List<MemberShipDTO> userList = userMapper.selectUserList(pageRequestDTO);
+		int totalUserCount = userMapper.totalUserCount(pageRequestDTO);
+		log.info("userList:{}",userList);
+		log.info("totalUserCount:{}",totalUserCount);
+
+		for(MemberShipDTO user : userList){
+			log.info("user:{}",user.getLoginId());
+		}
+	}
+
+	@Test
+	public void checkUserRoleTest(){
+		String loginId = "ujin2597";
+		MemberShipDTO user = userMapper.selectUserByLoginId(loginId);	
+		log.info("user:{}",user);		
 	}
 
 

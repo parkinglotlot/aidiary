@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.user.enumeration.Role;
+import com.aidiary.user.enumeration.Status;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,5 +51,9 @@ public class User {
   @Enumerated(EnumType.STRING)
   private Role role;
 
+  @Enumerated(EnumType.STRING)
+  private Status state;
 
 }
+
+

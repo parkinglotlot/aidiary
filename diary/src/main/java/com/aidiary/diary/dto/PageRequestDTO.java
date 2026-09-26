@@ -16,6 +16,7 @@ public class PageRequestDTO {
   private int page; //요청하는 페이지 번호(1부터 시작)
   private int pageSize; //limit 역할
   private String filter = ""; // 검색어 역할
+  private String filter2 = ""; //검색어 역할2
 
   public PageRequestDTO(int page, int pageSize){
     this.page = page <= 0 ? 1 : page;
