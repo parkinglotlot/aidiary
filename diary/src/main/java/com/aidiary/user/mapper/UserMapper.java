@@ -42,7 +42,9 @@ public interface UserMapper {
     +  " or login_id like concat('%', #{pageRequestDTO.filter}, '%') "
     +  " or full_name like concat('%', #{pageRequestDTO.filter}, '%') "
     +  " or email like concat('%', #{pageRequestDTO.filter}, '%') )"
-    +  " and (#{pageRequestDTO.filter2} is null or trim(#{pageRequestDTO.filter2}) = '' or state = #{pageRequestDTO.filter2} ) ")
+    +  " and (#{pageRequestDTO.filter2} is null or trim(#{pageRequestDTO.filter2}) = '' or state = #{pageRequestDTO.filter2} ) "
+    +  " order by id "
+    + " limit #{pageRequestDTO.pageSize} offset #{pageRequestDTO.offset} ")
     List<MemberShipDTO> selectUserList(@Param("pageRequestDTO") PageRequestDTO pageRequestDTO);
 
     // 로그인 아이디로 회원 조회

@@ -11,7 +11,9 @@ let endPage; // 현재 블럭(범위)에서 endPage
 
 let resultData; // fetch로 가져온 데이터 저장
 
-let searchKeyword = ""; // 검색 키워드 (초기화)
+let searchKeyword; // 검색 키워드 input element
+
+let filter = ""; // 검색 키워드 (초기화)
 
 let userStatus = ""; // 사용자 상태 (초기화)
 
@@ -31,6 +33,43 @@ let paginationNext;
 
 let btnSearch; // 조회버튼
 
+let totalUserCount; //총 사용자 수
+
+let btnReset; //리셋버튼
+
+// 검색 필터 설정
+function setSearchFilter() {
+  filter = document.getElementById("searchKeyword").value;
+  userStatus = document.getElementById("userStatus").value;
+}
+
+//검색 필터 초기화
+function resetSearchFilter() {
+  document.getElementById("searchKeyword").value = "";
+  document.getElementById("userStatus").value = "";
+  filter = "";
+  userStatus = "";
+}
+
+// 페이지 번호 버튼 제외한 버튼들의 상태 설정 (맨처음 / 맨끝 / 이전 / 다음 )
+function getUtilButtonStatus() {
+  if (curPage === 1) {
+    paginationFirst.disabled = true;
+    paginationPrev.disabled = true;
+  } else {
+    paginationFirst.disabled = false;
+    paginationPrev.disabled = false;
+  }
+
+  if (curPage === pagination.totalPage) {
+    paginationLast.disabled = true;
+    paginationNext.disabled = true;
+  } else {
+    paginationLast.disabled = false;
+    paginationNext.disabled = false;
+  }
+}
+
 function getButtonList(startPage, endPage, paginationPrev) {
   //버튼 갱신
   document.querySelectorAll("button[data-page]").forEach((btn) => btn.remove());
@@ -40,9 +79,17 @@ function getButtonList(startPage, endPage, paginationPrev) {
 
   for (let i = startPage; i <= endPage; i++) {
     let pageBtn = document.createElement("button");
-    pageBtn.classList.add("table-action-btn", "btn-user-detail");
+    pageBtn.classList.add("pagination-btn");
     pageBtn.dataset.page = i; // 페이지 번호 설정
     pageBtn.textContent = i;
+
+    if (i === Number(curPage)) {
+      pageBtn.classList.add("active"); // 현재 페이지 버튼에 active 클래스 추가
+      console.log("pageBtn:", pageBtn);
+    } else {
+      pageBtn.classList.remove("active"); // 현재 페이지 버튼이 아니면 active 클래스 제거
+    }
+
     fragment.appendChild(pageBtn);
   }
 
@@ -50,7 +97,7 @@ function getButtonList(startPage, endPage, paginationPrev) {
 }
 
 // 사용자 목록 가져오기
-function getUserList(curPage, pageSize, searchKeyword, userStatus) {
+function getUserList(curPage, pageSize, filter, userStatus) {
   //기존 tbody 내용 제거
   userTableBody.innerHTML = "";
   //페이지 번호 버튼 제거
@@ -58,7 +105,7 @@ function getUserList(curPage, pageSize, searchKeyword, userStatus) {
   let query = new URLSearchParams({
     curPage: curPage,
     pageSize: pageSize,
-    filter: searchKeyword,
+    filter: filter,
     filter2: userStatus,
   });
 
@@ -71,7 +118,7 @@ function getUserList(curPage, pageSize, searchKeyword, userStatus) {
     })
     .then(function (data) {
       resultData = data.json();
-      //   console.log(curPage, pageSize, searchKeyword, userStatus);
+      //   console.log(curPage, pageSize, filter, userStatus);
 
       console.log(resultData);
       return resultData;
@@ -101,41 +148,111 @@ function getUserList(curPage, pageSize, searchKeyword, userStatus) {
         `;
         userTableBody.appendChild(tr);
       }
+      // 총 사용자 수 표시
+      totalUserCount.innerHTML = pagination.totalCnt;
+
       // 페이징 버튼 추가
       startPage = pagination.startPage;
       endPage = pagination.endPage;
       getButtonList(startPage, endPage, paginationPrev);
+      getUtilButtonStatus(); // 페이지 번호 버튼 제외한 버튼들의 상태 설정 (맨처음 / 맨끝 / 이전 / 다음 )
     });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   userTableBody = document.getElementById("userTableBody");
-  searchKeyword = document.getElementById("searchKeyword").value;
+  filter = document.getElementById("searchKeyword").value;
   userStatus = document.getElementById("userStatus").value;
   paginationFirst = document.getElementsByClassName("pagination-first")[0];
   paginationPrev = document.getElementsByClassName("pagination-prev")[0];
   paginationNext = document.getElementsByClassName("pagination-next")[0];
   paginationLast = document.getElementsByClassName("pagination-last")[0];
-  pageBtnList = document.querySelectorAll("button[data-page]");
+  searchKeyword = document.getElementById("searchKeyword");
+  totalUserCount = document.getElementById("totalUserCount");
+  btnReset = document.getElementById("btnReset");
+
   btnSearch = document.getElementById("btnSearch");
 
   // 사용자 목록 가져오기(초기화)
-  getUserList(curPage, pageSize, searchKeyword, userStatus);
+  getUserList(curPage, pageSize, filter, userStatus);
+
+  // console.log("pageBtnList:", pageBtnList);
 
   //조회 버튼 클릭 -> 사용자 목록 가져오기
   btnSearch.addEventListener("click", function (e) {
     e.preventDefault();
-    searchKeyword = document.getElementById("searchKeyword").value;
-    userStatus = document.getElementById("userStatus").value;
-    getUserList(curPage, pageSize, searchKeyword, userStatus);
-    console.log("searchKeyword:", searchKeyword);
+    curPage = 1; // 조회 버튼 클릭 시 현재 페이지를 1로 초기화
+    setSearchFilter(); // 검색 필터 설정
+    getUserList(curPage, pageSize, filter, userStatus);
+    console.log("filter:", filter);
     console.log("userStatus:", userStatus);
   });
 
-  // pageBtnList 클릭 -> 사용자 목록 업데이트
-  pageBtnList.forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-      getUserList(curPage, pageSize, searchKeyword, userStatus);
-    });
+  //enter key 입력 시 조회 버튼 클릭 이벤트 발생
+  searchKeyword.addEventListener("keypress", function (e) {
+    if (e.key == "Enter") {
+      // e.preventDefault();
+      btnSearch.click();
+    }
+  });
+
+  //리셋 버튼 클릭 -> 검색 필터 초기화 및 사용자 목록 가져오기
+  btnReset.addEventListener("click", function (e) {
+    e.preventDefault();
+    resetSearchFilter(); // 검색 필터 초기화
+    curPage = 1; // 현재 페이지를 1로 초기화
+    getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 가져오기
+  });
+
+  // pageBtnList 클릭 (번호 버튼) -> 사용자 목록 업데이트
+  document.addEventListener("click", function (e) {
+    // e.preventDefault();
+    let btn = e.target.matches("button[data-page]") ? e.target : null;
+
+    if (btn !== null) {
+      curPage = Number(btn.dataset.page); //클릭한 버튼의 페이지 번호를 curPage로 설정
+      setSearchFilter(); // 검색 필터 설정
+      getUserList(curPage, pageSize, filter, userStatus);
+    }
+  });
+
+  //paginationPrev 클릭 -> 이전 페이지 블록으로 이동
+  paginationPrev.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (curPage > 1) {
+      curPage = curPage - 1; // 이전 페이지로 이동
+      setSearchFilter(); // 검색 필터 설정
+      getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 업데이트
+    }
+  });
+
+  //paginationNext 클릭 -> 다음 페이지 블록으로 이동
+  paginationNext.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (curPage < pagination.totalPage) {
+      curPage = curPage + 1; // 다음 페이지로 이동
+      setSearchFilter(); // 검색 필터 설정
+      getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 업데이트
+    }
+  });
+
+  //paginationFirst 클릭 -> 첫 페이지로 이동
+  paginationFirst.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (curPage > 1) {
+      curPage = 1; // 첫 페이지로 이동
+      setSearchFilter(); // 검색 필터 설정
+      getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 업데이트
+    }
+  });
+
+  //paginationLast 클릭 -> 마지막 페이지로 이동
+  paginationLast.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (curPage < pagination.totalPage) {
+      curPage = pagination.totalPage; // 마지막 페이지로 이동
+      setSearchFilter(); // 검색 필터 설정
+      getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 업데이트
+    }
   });
 });

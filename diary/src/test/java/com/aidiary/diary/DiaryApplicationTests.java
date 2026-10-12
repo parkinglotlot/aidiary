@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
+import com.aidiary.diary.dto.DiaryDTO;
 import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.jpa.Diary;
 import com.aidiary.diary.mapper.DiaryMapper;
@@ -36,6 +37,8 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+
+
 
 
 @SpringBootTest
@@ -170,6 +173,8 @@ class DiaryApplicationTests {
 
 
 	}
+
+	
 
 	//  transactional 없이 데이터 업데이트
 	@Test
@@ -470,8 +475,11 @@ class DiaryApplicationTests {
 		User youjin = userRepository.getUserByLoginId("ujin2597");
 
 		for(int i = 11; i < 120; i++){
-			Diary diary = new Diary("title" + i,"content" + i,localDateTime);
-			diary.setWriter(youjin);
+			DiaryDTO diary = new DiaryDTO().builder()
+			.content("content" + i)
+			.title("title" + i)
+			.build();
+			diary.setWriterId(youjin.getId());
 			boolean isInsert = diaryMapper.isInsertDiaryList(diary) != 0;
 			if (!isInsert){
 				log.info("실패");
@@ -484,9 +492,9 @@ class DiaryApplicationTests {
 	@Test
 	void readDiaries(){
 		User user = userRepository.getUserByLoginId("ujin2597");
-		List<Diary> diaryList =  diaryMapper.selectRequestPaginationList(new PageRequestDTO(3,10),user);
+		List<DiaryDTO> diaryList =  diaryMapper.selectRequestPaginationList(new PageRequestDTO(3,10),user);
 
-		for(Diary o : diaryList){
+		for(DiaryDTO o : diaryList){
 
 			log.info("diary title : {}",o.getTitle());
 		}
@@ -505,7 +513,13 @@ class DiaryApplicationTests {
 		diary.setContent(diary.getContent() + "업데이트");
 		diary.setTitle(diary.getTitle() + "업데이트");
 
-		int updateNum = diaryMapper.updateDiary(diary,getUser);
+		DiaryDTO diaryDTO = new DiaryDTO()
+		.builder()
+		.content(diary.getContent())
+		.title(diary.getTitle())
+		.build();
+
+		int updateNum = diaryMapper.updateDiary(diaryDTO,getUser);
     try {
       if(updateNum != 0){
         log.info("업데이트 성공");
@@ -581,6 +595,32 @@ class DiaryApplicationTests {
 		String loginId = "ujin2597";
 		MemberShipDTO user = userMapper.selectUserByLoginId(loginId);	
 		log.info("user:{}",user);		
+	}
+
+
+	// transactional 없이 데이터 밀어넣기
+	@Test
+	void MembershipTest3() throws Exception {
+
+		for(int i = 0; i < 100; i++){
+        User user = new User();
+		user.setLoginId("ujin" + i);
+		String hashedPassword = util.encAES("1234");
+		user.setPassword(hashedPassword);
+		user.setEmail("ujin"+i+"@naver.com");
+		user.setFullName("Youjin" + i);
+
+		DateTimeFormatter ldt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		user.setBirthday(LocalDate.parse("1992-08-25",ldt));
+
+		userRepository.save(user);
+
+		Optional<User> isLoginUser = userRepository.findByLoginId(user.getLoginId());
+
+		if(isLoginUser.isPresent()) {continue;}
+		else log.info("실패");
+		}
+
 	}
 
 
