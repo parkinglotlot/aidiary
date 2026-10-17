@@ -85,7 +85,7 @@ function getButtonList(startPage, endPage, paginationPrev) {
 
     if (i === Number(curPage)) {
       pageBtn.classList.add("active"); // 현재 페이지 버튼에 active 클래스 추가
-      console.log("pageBtn:", pageBtn);
+      // console.log("pageBtn:", pageBtn);
     } else {
       pageBtn.classList.remove("active"); // 현재 페이지 버튼이 아니면 active 클래스 제거
     }
@@ -135,15 +135,39 @@ function getUserList(curPage, pageSize, filter, userStatus) {
         //로그인 아이디로 세팅
         let tr = document.createElement("tr");
         tr.id = element.id; // tr의 id를 사용자 id로 설정
-        tr.innerHTML = `
+
+        let otherOptions = "";
+        if (element.state !== "ACTIVE") {
+          otherOptions += `<option value="ACTIVE">정상</option>`;
+        }
+        if (element.state !== "INACTIVE") {
+          otherOptions += `<option value="INACTIVE">비활성</option>`;
+        }
+        if (element.state !== "BLOCKED") {
+          otherOptions += `<option value="BLOCKED">차단</option>`;
+        }
+
+        tr.innerHTML =
+          `
           <td>${element.ser}</td>
           <td>${element.loginId}</td>
           <td>${element.fullName}</td>
           <td>${element.email}</td>
+          <td>${element.phone}</td>
           <td>${element.birthday}</td>
-          <td>${element.state}</td>
           <td>
-            <button class="table-action-btn btn-user-detail" data-user-id="${element.id}">상세</button>
+          <select
+                  id="userStatus|${element.id}"
+                  name="status"
+                  class="form-select status-select"
+                  ${element.role === "ADMIN" ? "disabled" : ""}
+                >
+                   <option value=${element.state} selected>${element.state === "ACTIVE" ? "정상" : element.state === "INACTIVE" ? "비활성" : "차단"}</option>` +
+          otherOptions +
+          `</select>
+                </td>
+          <td>
+            <button class="table-action-btn btn-user-detail" data-user-id="${element.id}">저장</button>
           </td>
         `;
         userTableBody.appendChild(tr);
@@ -156,6 +180,37 @@ function getUserList(curPage, pageSize, filter, userStatus) {
       endPage = pagination.endPage;
       getButtonList(startPage, endPage, paginationPrev);
       getUtilButtonStatus(); // 페이지 번호 버튼 제외한 버튼들의 상태 설정 (맨처음 / 맨끝 / 이전 / 다음 )
+    });
+}
+
+// 사용자 상태 업데이트
+function updateUserStatus(userId, selectedStatus) {
+  window
+    .fetch("/userAuth/updateUserState", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: userId,
+        state: selectedStatus,
+      }),
+    })
+    .then(function (response) {
+      console.log(response);
+      return response.json();
+    })
+    .then(function (result) {
+      console.log(result);
+      swal.fire({
+        title: "회원 상태가 변경되었습니다.",
+      });
+    })
+    .catch(function (error) {
+      console.log(error);
+      swal.fire({
+        title: "회원상태 변경 실패했습니다.",
+      });
     });
 }
 
@@ -253,6 +308,36 @@ document.addEventListener("DOMContentLoaded", function () {
       curPage = pagination.totalPage; // 마지막 페이지로 이동
       setSearchFilter(); // 검색 필터 설정
       getUserList(curPage, pageSize, filter, userStatus); // 사용자 목록 업데이트
+    }
+  });
+
+  // 사용자 상태 변경 버튼 클릭 -> 이벤트 처리
+  document.addEventListener("click", function (e) {
+    let btn = e.target.classList.contains("btn-user-detail") ? e.target : null;
+    if (btn !== null) {
+      console.log("btn-user-detail clicked");
+      console.log("btn-user-detail clicked");
+      e.preventDefault();
+      let userId = e.target.dataset.userId;
+      let userStatusSelect = document.getElementById("userStatus|" + userId);
+      let selectedStatus = userStatusSelect.value;
+
+      swal
+        .fire({
+          title: "회원상태를 변경하시겠습니까?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "확인",
+          cancelButtonText: "취소",
+        })
+        .then(function (result) {
+          if (result.isConfirmed) {
+            // Fetch API를 사용하여 PUT 요청 보내기
+            updateUserStatus(userId, selectedStatus);
+          }
+        });
     }
   });
 });

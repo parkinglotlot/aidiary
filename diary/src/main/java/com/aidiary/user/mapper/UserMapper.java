@@ -4,6 +4,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
 import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.diary.dto.Pagination;
@@ -32,10 +34,12 @@ public interface UserMapper {
                 + ", row_number()over(order by id) as ser\n "
                 + ", login_id as loginId\n "
                 + ", full_name as fullName\n "
+                + ", phone\n "
                 + ", email\n "
                 + ", birthday\n "
                 + ", state\n "
                 + ", 'Management' as management \n "
+                + ", role \n "
             + "from user "
     +  " where 1=1 "
     +  " and (#{pageRequestDTO.filter} is null or trim(#{pageRequestDTO.filter}) = '' "
@@ -61,5 +65,10 @@ public interface UserMapper {
             +" limit 1")
     MemberShipDTO selectUserByLoginId(@Param("loginId") String loginId); 
 
+    // 관리자가 회원 상태 업데이트
+    @Update ("update user set state = #{membershipDTO.state} where id = #{membershipDTO.id}")
+    int updateUserState(@Param ("membershipDTO") MemberShipDTO membershipDTO);
+
+   
     
 }

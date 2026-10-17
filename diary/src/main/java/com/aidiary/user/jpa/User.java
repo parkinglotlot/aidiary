@@ -16,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,13 +46,18 @@ public class User {
   @Column
   private LocalDate birthday;
 
+  @Column(length = 13)
+  private String phone;
+
   @OneToMany(mappedBy = "user")
   private List<Diary> diaries = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
+  @NotNull 
   private Role role;
 
   @Enumerated(EnumType.STRING)
+  @NotNull 
   private Status state;
 
 }

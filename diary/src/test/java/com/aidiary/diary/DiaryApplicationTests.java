@@ -623,6 +623,22 @@ class DiaryApplicationTests {
 
 	}
 
+	@Test
+	@Transactional 
+	void updateUserStateTest(){
+		MemberShipDTO membershipDTO = new MemberShipDTO();
+		membershipDTO.setId(2);
+		membershipDTO.setState("INACTIVE");
+
+		int updateResult = userMapper.updateUserState(membershipDTO);
+
+		if(updateResult != 0){
+			log.info("성공:{}",updateResult);
+		}else{
+			log.info("실패:{}",updateResult);
+		}
+	}
+
 
 
 }

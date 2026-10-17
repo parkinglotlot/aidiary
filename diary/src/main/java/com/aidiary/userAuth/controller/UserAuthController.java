@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -14,10 +16,13 @@ import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.diary.dto.PageResponseDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
+import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.userAuth.service.UserAuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import lombok.AllArgsConstructor;
+
 
 @AllArgsConstructor
 @Controller
@@ -66,5 +71,20 @@ public class UserAuthController {
         PageResponseDTO pageResponseDTO = userAuthService.getUserList(pageRequestDTO);
 
         return new ResponseEntity<>(new CustomResponseEntity("Success",200,pageResponseDTO,HttpStatus.OK),HttpStatus.OK);
+    }
+    
+    @PutMapping("/updateUserState")
+    @ResponseBody 
+    public ResponseEntity<CustomResponseEntity> updateUserState(HttpServletRequest request, @RequestBody MemberShipDTO membershipDTO) {
+
+        String adminLoginId = (String)request.getSession().getAttribute("loginId");
+
+        int updateResult = userAuthService.updateUserState(membershipDTO, adminLoginId);
+
+        if(updateResult != 1){
+            return new ResponseEntity<>(new CustomResponseEntity("회원 상태 업데이트 실패",500,null,HttpStatus.INTERNAL_SERVER_ERROR),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(new CustomResponseEntity("회원 상태 업데이트 성공",200,null,HttpStatus.OK),HttpStatus.OK);
     }
 }
