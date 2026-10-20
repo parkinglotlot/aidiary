@@ -56,4 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     // window.location.href = "/userAuth/userAuthAdmin";
   });
+
+  Array.from(document.getElementsByClassName("menu-list")).forEach(
+    function (menu) {
+      menu.addEventListener("click", function (e) {
+        e.preventDefault();
+        // alert("준비중입니다.");
+        location.href = e.target.dataset.menu;
+      });
+    },
+  );
 });
