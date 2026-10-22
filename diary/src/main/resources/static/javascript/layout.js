@@ -1,6 +1,7 @@
 let logoutBtn; //로그아웃 버튼
 let diaryMenus; //다이어리 메뉴
 let userAuth; //유저권한 메뉴 버튼
+let currentPath; //현재 메뉴 url
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
@@ -9,6 +10,17 @@ document.addEventListener("DOMContentLoaded", function () {
   diaryMenus = document.querySelectorAll(".diaryMenu");
 
   userAuth = document.getElementById("userAuth");
+
+  currentPath = window.location.pathname;
+
+  //현재 url에 따라 메뉴 active 적용
+  document.querySelectorAll(".menu-item").forEach(function (menu) {
+    if (menu.dataset["menu"] === currentPath) {
+      menu.classList.add("active");
+    } else {
+      menu.classList.remove("active");
+    }
+  });
 
   logoutBtn.addEventListener("click", function () {
     window
@@ -28,42 +40,30 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 
-  //다이어리 목록 이동
-  diaryMenus.forEach(function (diaryMenu) {
-    diaryMenu.addEventListener("click", function () {
-      window.location.href = "/diary/goHome";
-    });
-  });
+  //메뉴이동
+  document.addEventListener("click", function (e) {
+    let menuItem = e.target.classList.contains("menu-item") ? e.target : null;
 
-  // 사용자관리로 이동
-  userAuth.addEventListener("click", function (e) {
-    e.preventDefault();
-    window
-      .fetch("/userAuth/userAuthAdmin", {
-        method: "GET",
-      })
-      .then(function (data) {
-        if (!data.ok) {
-          throw new Error("권한이 없습니다.");
-        }
-        window.location.href = "/userAuth/userAuthAdmin";
-      })
-      .catch(function (error) {
-        swal.fire({
-          title: "권한이 없습니다.",
-          icon: "error",
+    if (menuItem !== null) {
+      e.preventDefault();
+      let url = menuItem.dataset.menu;
+      window
+        .fetch(url, {
+          method: "GET",
+        })
+        .then(function (data) {
+          if (!data.ok) {
+            throw new Error("권한이 없습니다.");
+          }
+          window.location.href = url;
+        })
+        .catch(function (error) {
+          swal.fire({
+            title: "권한이 없습니다.",
+            icon: "error",
+          });
         });
-      });
-    // window.location.href = "/userAuth/userAuthAdmin";
+      // location.href = menuItem.dataset.menu;
+    }
   });
-
-  Array.from(document.getElementsByClassName("menu-list")).forEach(
-    function (menu) {
-      menu.addEventListener("click", function (e) {
-        e.preventDefault();
-        // alert("준비중입니다.");
-        location.href = e.target.dataset.menu;
-      });
-    },
-  );
 });

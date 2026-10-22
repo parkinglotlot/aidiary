@@ -15,6 +15,9 @@ let diaryWriter;
 //다이어리 기분 상태
 let diaryMood;
 
+// 목록 버튼
+let btnList;
+
 // 수정 버튼
 let btnEdit;
 
@@ -306,6 +309,7 @@ document.addEventListener("DOMContentLoaded", function () {
   diaryContent = document.getElementById("diaryContent");
   diaryWriter = document.getElementById("diaryWriter");
   diaryMood = document.getElementById("diaryMood");
+  btnList = document.getElementById("btnList");
   btnEdit = document.getElementById("btnEdit");
   btnSave = document.getElementById("btnSave");
   btnDelete = document.getElementById("btnDelete");
@@ -316,6 +320,12 @@ document.addEventListener("DOMContentLoaded", function () {
   emotionTitle = document.getElementById("emotionTitle");
   emotionDesc = document.getElementById("emotionDesc");
   emotionTags = document.getElementById("emotionTags");
+
+  //목록 버튼 누르면 목록 페이지로 이동
+  btnList.addEventListener("click", function (e) {
+    e.preventDefault();
+    window.location.href = "/diary/goHome";
+  });
 
   // 모드 설정
   getModeFromUrl();
