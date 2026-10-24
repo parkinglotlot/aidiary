@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>회원가입 | AI 다이어리</title>
+
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/main.css" />
+
+    <!-- 회원가입 CSS -->
+    <link rel="stylesheet" href="/css/signup.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.4.10/dist/sweetalert2.min.js"></script>
+  </head>
+
+  <body>
+    <main class="signup-page">
+      <div class="signup-container">
+        <!-- 브랜드 -->
+        <div class="signup-brand">
+          <a href="/" class="brand-logo">AI Diary</a>
+          <p>당신의 일상을 기록하는 특별한 공간</p>
+        </div>
+
+        <!-- 회원가입 카드 -->
+        <section class="signup-card">
+          <header class="signup-header">
+            <h1>회원가입</h1>
+            <p>AI 다이어리와 함께 일상을 기록해 보세요.</p>
+          </header>
+
+          <!-- 회원가입 Form -->
+          <form id="signupForm">
+            <div class="signup-form-grid">
+              <!-- 아이디 -->
+              <div class="signup-field">
+                <label for="loginId">
+                  아이디 <span class="required">*</span>
+                </label>
+
+                <input
+                  id="loginId"
+                  name="loginId"
+                  type="text"
+                  placeholder="아이디를 입력하세요"
+                  autocomplete="username"
+                  required
+                />
+              </div>
+
+              <!-- 이름 -->
+              <div class="signup-field">
+                <label for="fullName">
+                  이름 <span class="required">*</span>
+                </label>
+
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  placeholder="이름을 입력하세요"
+                  autocomplete="name"
+                  required
+                />
+              </div>
+
+              <!-- 비밀번호 -->
+              <div class="signup-field">
+                <label for="password">
+                  비밀번호 <span class="required">*</span>
+                </label>
+
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="비밀번호를 입력하세요"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+
+              <!-- 비밀번호 확인 -->
+              <div class="signup-field">
+                <label for="verifyPassword">
+                  비밀번호 확인
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="verifyPassword"
+                  name="verifyPassword"
+                  type="password"
+                  placeholder="비밀번호를 다시 입력하세요"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+
+              <!-- 이메일 -->
+              <div class="signup-field signup-field-wide">
+                <label for="email">
+                  이메일 <span class="required">*</span>
+                </label>
+
+                <div class="signup-input-group">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="example@email.com"
+                    autocomplete="email"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    id="btnSendEmail"
+                    class="signup-btn signup-btn-secondary"
+                  >
+                    인증번호 발송
+                  </button>
+                </div>
+
+                <p
+                  id="emailMessage"
+                  class="signup-field-message"
+                  aria-live="polite"
+                ></p>
+              </div>
+
+              <!-- 이메일 인증번호 -->
+              <div
+                class="signup-field signup-field-wide"
+                id="emailVerificationArea"
+              >
+                <label for="emailCode">
+                  이메일 인증번호
+                  <span class="required">*</span>
+                </label>
+
+                <div class="signup-input-group">
+                  <div class="signup-code-wrapper">
+                    <input
+                      id="emailCode"
+                      name="emailCode"
+                      type="text"
+                      inputmode="numeric"
+                      pattern="[0-9]{6}"
+                      maxlength="6"
+                      placeholder="6자리 인증번호"
+                      autocomplete="one-time-code"
+                      disabled
+                      required
+                    />
+
+                    <span id="emailTimer" class="signup-timer" role="timer">
+                      05:00
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    id="btnVerifyEmail"
+                    class="signup-btn signup-btn-secondary"
+                    disabled
+                  >
+                    인증 확인
+                  </button>
+                </div>
+
+                <p
+                  id="emailVerifyMessage"
+                  class="signup-field-message"
+                  aria-live="polite"
+                >
+                  인증번호를 발송하면 입력할 수 있습니다.
+                </p>
+              </div>
+
+              <!-- 전화번호 -->
+              <div class="signup-field">
+                <label for="phone">전화번호</label>
+
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  placeholder="010-1234-5678"
+                  autocomplete="tel"
+                />
+              </div>
+
+              <!-- 생년월일 -->
+              <div class="signup-field">
+                <label for="birthday">
+                  생년월일 <span class="required">*</span>
+                </label>
+
+                <input id="birthday" name="birthday" type="date" required />
+              </div>
+            </div>
+
+            <!-- 회원가입 버튼 -->
+            <div class="signup-actions">
+              <button
+                type="submit"
+                id="btnSignup"
+                class="signup-btn signup-btn-primary"
+                disabled
+              >
+                회원가입
+              </button>
+            </div>
+          </form>
+
+          <!-- 로그인 안내 -->
+          <div class="signup-footer">
+            <p>
+              이미 계정이 있으신가요?
+              <a href="/login">로그인</a>
+            </p>
+          </div>
+        </section>
+
+        <footer class="signup-page-footer">
+          <p>© AI Diary. All rights reserved.</p>
+        </footer>
+      </div>
+    </main>
+
+    <!-- 회원가입 JavaScript -->
+    <script src="/javascript/signup.js"></script>
+  </body>
+</html>

@@ -1,11 +1,16 @@
 package com.aidiary.user.util;
 
 
+import com.aidiary.signup.dto.SignUpDTO;
+import com.aidiary.signup.dto.VerifyEmailDTO;
 import com.aidiary.user.dto.MemberShipDTO;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +18,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 @AllArgsConstructor
 @Controller
@@ -24,10 +32,11 @@ public class UtilController {
   //메일 보내기
   private final JavaMailSender javamailSender;
   private final UtilService utilService;
+  private final Logger log = LoggerFactory.getLogger(UtilController.class);
 
   @PostMapping(value = "/sendMail")
   @ResponseBody
-  public ResponseEntity<String> mailSend(@Value("${spring.mail.username}") String emailFrom, String emailTo, HttpSession session){
+  public ResponseEntity<String> mailSend(@Value("${spring.mail.username}") String emailFrom, @RequestBody  VerifyEmailDTO verifyEmailDTO, HttpSession session){
 
     //난수 생성
     String verifyNumber = utilService.randomNum();
@@ -35,7 +44,15 @@ public class UtilController {
     //이메일 보내기
     String title = "인증번호 메일 보냅니다.";
 
-    String content = "인증번호는" + "<br></br>" + verifyNumber + "<br></br>" + "입니다. 해당 인증 번호를 확인란에 입력해주세요.";
+    String content =
+    "인증번호는<br><br>" +
+    "<span style='font-size:24px; font-weight:bold; color:#2563eb;'>"
+    + verifyNumber +
+    "</span><br><br>" +
+    "입니다. 해당 인증 번호를 확인란에 입력해주세요.";
+    
+    String emailTo = verifyEmailDTO.getEmail();
+    // log.info("emailTo:{}",emailTo);
 
     try {
       MimeMessage mimeMailMessage = javamailSender.createMimeMessage();
@@ -44,11 +61,14 @@ public class UtilController {
       mimeMessageHelper.setFrom(emailFrom);
       mimeMessageHelper.setTo(emailTo);
       mimeMessageHelper.setSubject(title);
-      mimeMessageHelper.setText(content);
+      mimeMessageHelper.setText(content, true);
       javamailSender.send(mimeMailMessage);
 
     } catch (MessagingException e) {
-//      throw new UserException("메일 발송에 실패했습니다.");
+//      
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증번호 발송에 실패했습니다.");
+    }  catch(Exception e){
+      log.info("에러내용:{}",e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("인증번호 발송에 실패했습니다.");
     }
 
@@ -66,13 +86,13 @@ public class UtilController {
 
   @PostMapping(value = "/verifyEmail")
   @ResponseBody
-  public ResponseEntity<String> verifyEmail(HttpSession session, String verifyNumber, MemberShipDTO member){
+  public ResponseEntity<String> verifyEmail(HttpSession session, @RequestBody String verifyNumber){
 
     //세션에 저장된 인증번호 불러오기
     String setVerifyNumber =  (String)session.getAttribute("verifyNumber");
 
     if(verifyNumber.equals(setVerifyNumber)) {
-//      member.setVerifyEmail(true);
+
       session.setAttribute("VERIFY_NUMBER",true);
 
       //기존 번호 삭제
