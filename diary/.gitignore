@@ -41,3 +41,8 @@ out/
 # 민감 정보 파일
 application.properties
 application.yml
+
+# 민감 정보 파일
+.env
+.env.*
+!.env.example
