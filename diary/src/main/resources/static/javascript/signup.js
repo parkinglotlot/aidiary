@@ -3,9 +3,11 @@ let password; // password
 let verifyPassword; //password  확인
 let email;
 let emailCode;
-let emailCodeResponse;
+let emailCodeInput;
 let phone;
 let birthday;
+let emailTimer; //이메일 타이머
+let timerFunc; //타이머 실행 함수
 
 let isEmailVerified;
 
@@ -50,6 +52,8 @@ function sendEmail(email) {
         text: "해당 주소에서 인증번호를 확인해주세요.",
         type: "success",
       });
+
+      setTime(); // 타이머 시작
     })
     .catch(function (error) {
       console.log("error", error);
@@ -83,6 +87,7 @@ function verifyEmail(emailCode) {
         title: "result",
         type: "Success",
       });
+      endTimer(timerFunc); //타이머 end
       isEmailVerified = true; // 전역 이메일 확인여부 true로
     })
     .catch(function (error) {
@@ -93,17 +98,51 @@ function verifyEmail(emailCode) {
     });
 }
 
+// 타이머 작동
+function setTime() {
+  emailCodeInput.disabled = false;
+  btnVerifyEmail.disabled = false;
+  clearInterval(timerFunc); // w재발송일 경우 초기화
+  let time = 180; // 3분
+  timerFunc = setInterval(() => {
+    // console.log(time);
+    let minutes = Math.floor(time / 60); // 5분
+    let seconds = time % 60; // 초
+
+    emailTimer.innerHTML =
+      String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+
+    if (time <= 0) {
+      endTimer(timerFunc); // 시간 0:00 시, 초기화
+    }
+
+    time--; // 시간 줄어들기
+  }, 1000);
+}
+
+function endTimer(timerFunc) {
+  clearInterval(timerFunc);
+  emailTimer.innerHtml = "03:00"; // 다시 초기화
+  emailCodeInput.disabled = true;
+  btnVerifyEmail.disabled = true;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   loginId = document.getElementById("loginId").value;
   password = document.getElementById("password").value;
   verifyPassword = document.getElementById("verifyPassword").value;
   email = document.getElementById("email").value;
-  emailCode = document.getElementById("emailCode").value;
+  emailCodeInput = document.getElementById("emailCode"); // 이메일코드 인풋요소
+  emailCode = document.getElementById("emailCode").value; //이메일 코드값
   phone = document.getElementById("phone").value;
   birthday = document.getElementById("birthday").value;
+  emailTimer = document.getElementById("emailTimer"); //span
+  btnVerifyEmail = document.getElementById("btnVerifyEmail");
   isEmailVerified = false; // 초기화
 
   btnSendEmail = document.getElementById("btnSendEmail");
+
+  // setTime();
 
   // 이메일 전송 버튼 클릭
   btnSendEmail.addEventListener("click", function (e) {
@@ -115,6 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
   btnVerifyEmail.addEventListener("click", function (e) {
     e.preventDefault();
     emailCode = document.getElementById("emailCode").value; // 다시 값 세팅
-    verifyEmail(emailCode);
+
+    verifyEmail(String(emailCode));
   });
 });

@@ -40,6 +40,8 @@ public class UtilController {
 
     //난수 생성
     String verifyNumber = utilService.randomNum();
+    verifyNumber = verifyNumber.length() > 6 ? verifyNumber.substring(0,6) : verifyNumber;
+
 
     //이메일 보내기
     String title = "인증번호 메일 보냅니다.";

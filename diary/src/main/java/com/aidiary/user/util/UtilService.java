@@ -24,7 +24,7 @@ public class UtilService {
     StringBuilder sb = new StringBuilder();
 
 
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 6; i++){
       int checkNum = (int)(Math.random() * 10);
       char randomChar = (char)(checkNum + '0');
       sb.append(randomChar + checkNum);
