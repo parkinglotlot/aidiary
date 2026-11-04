@@ -54,7 +54,7 @@ function sendEmail(email) {
         text: "해당 주소에서 인증번호를 확인해주세요.",
         type: "success",
       });
-      isEmailVerified = false; // 전역 이메일 확인여부 false로
+
       setTime(); // 타이머 시작
     })
     .catch(function (error) {
@@ -131,41 +131,55 @@ function endTimer(timerFunc) {
 }
 
 function validateSignUp() {
-  if (
-    loginId == null ||
-    password == null ||
-    verifyPassword == null ||
-    email == null ||
-    phone == null ||
-    birthday == null ||
-    emailCode == null ||
-    loginId.trim() === "" ||
-    password.trim() === "" ||
-    verifyPassword.trim() === "" ||
-    email.trim() === "" ||
-    phone.trim() === "" ||
-    birthday.trim() === "" ||
-    emailCode.trim() === ""
-  ) {
-    swal.fire({
-      title: "회원가입 실패",
-      text: "모든 항목을 입력해주세요.",
-      type: "error",
-    });
-    return false;
+  let errorMessage = "";
+  if (loginId == null || loginId.trim() === "") {
+    document.getElementById("loginIdMessage").style.display = "block";
+    document.getElementById("loginIdMessage2").style.display = "none";
+  } else if (loginId.length < 4 || loginId.length > 10) {
+    document.getElementById("loginIdMessage2").style.display = "block";
+    document.getElementById("loginIdMessage").style.display = "none";
+  } else {
+    document.getElementById("loginIdMessage2").style.display = "none";
+    document.getElementById("loginIdMessage").style.display = "none";
+  }
+
+  if (fullName == null || fullName.trim() === "") {
+    document.getElementById("fullNameMessage").style.display = "block";
+  } else {
+    document.getElementById("fullNameMessage").style.display = "none";
+  }
+  if (password == null || password.trim() === "") {
+    errorMessage = "비밀번호를 입력해주세요\n";
+  }
+  if (verifyPassword == null || verifyPassword.trim() === "") {
+    errorMessage = "비밀번호 확인을 입력해주세요\n";
+  }
+  if (password.length < 4 || password.length > 10) {
+    errorMessage = "비밀번호는 4자 이상 10자 이하로 입력해주세요\n";
   }
   if (password !== verifyPassword) {
-    swal.fire({
-      title: "회원가입 실패",
-      text: "비밀번호가 일치하지 않습니다.",
-      type: "error",
-    });
-    return false;
+    errorMessage = "비밀번호가 일치하지 않습니다.\n";
   }
+  if (email == null || email.trim() === "") {
+    errorMessage = "이메일을 입력해주세요\n";
+  }
+  if (phone == null || phone.trim() === "") {
+    errorMessage = "전화번호를 입력해주세요\n";
+  }
+  if (birthday == null || birthday.trim() === "") {
+    errorMessage = "생년월일을 입력해주세요\n";
+  }
+  if (emailCode == null || emailCode.trim() === "") {
+    errorMessage = "이메일 인증코드를 입력해주세요\n";
+  }
+
   if (!isEmailVerified) {
+    errorMessage = "이메일 인증을 완료해주세요.\n";
+  }
+  if (errorMessage !== "") {
     swal.fire({
       title: "회원가입 실패",
-      text: "이메일 인증을 완료해주세요.",
+      text: errorMessage,
       type: "error",
     });
     return false;
@@ -228,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
           loginId: loginId,
           fullName: fullName,
           password: password,
+          verifyPassword: verifyPassword,
           email: email,
           phone: phone,
           birthday: birthday,
