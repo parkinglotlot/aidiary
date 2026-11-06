@@ -69,6 +69,10 @@ public interface UserMapper {
     @Update ("update user set state = #{membershipDTO.state} where id = #{membershipDTO.id}")
     int updateUserState(@Param ("membershipDTO") MemberShipDTO membershipDTO);
 
+    // (회원가입 시) 이메일 중복 검사
+    @Select("select count(*) from user u where exists (select 1 from user u1  where u1.id = u.id and u1.email = #{email} and u1.state = 'ACTIVE') ")
+    int checkEmailDuplicate(@Param ("email") String email);
+
    
     
 }

@@ -10,12 +10,33 @@ import lombok.AllArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.aidiary.user.mapper.UserMapper;
 
 
 
 @Service
 @AllArgsConstructor
 public class UtilService {
+
+  private final UserMapper userMapper;
+
+  //이메일 중복 검사
+  /**
+   * @param email
+   * @return
+   */
+  public boolean isEmailDuplicate(String email){
+    int emailCount = -1;
+    try{
+      if(email != null && !email.trim().equals("")){
+        emailCount = userMapper.checkEmailDuplicate(email);
+      }
+    }catch(Exception e){
+      return false;
+    }
+
+    return emailCount == 0;
+  }
 
 
   // 난수 생성

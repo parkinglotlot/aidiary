@@ -37,7 +37,12 @@ public class UtilController {
   @PostMapping(value = "/sendMail")
   @ResponseBody
   public ResponseEntity<String> mailSend(@Value("${spring.mail.username}") String emailFrom, @RequestBody  VerifyEmailDTO verifyEmailDTO, HttpSession session){
-
+    
+    // 이메일 중복 검사
+    boolean isEmailDuplicate = utilService.isEmailDuplicate(verifyEmailDTO.getEmail());
+    if(!isEmailDuplicate){
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 사용중인 이메일입니다.");
+    }
     //난수 생성
     String verifyNumber = utilService.randomNum();
     verifyNumber = verifyNumber.length() > 6 ? verifyNumber.substring(0,6) : verifyNumber;
@@ -88,10 +93,14 @@ public class UtilController {
 
   @PostMapping(value = "/verifyEmail")
   @ResponseBody
-  public ResponseEntity<String> verifyEmail(HttpSession session, @RequestBody String verifyNumber){
+  public ResponseEntity<String> verifyEmail(HttpSession session, @RequestBody VerifyEmailDTO verifyEmailDTO){
 
     //세션에 저장된 인증번호 불러오기
     String setVerifyNumber =  (String)session.getAttribute("verifyNumber");
+    String verifyNumber = verifyEmailDTO.getEmailCode();
+    verifyNumber = verifyNumber.trim(); // 입력값 공백 제거
+    // log.info("setVerifyNumber: {}", setVerifyNumber);
+    // log.info("verifyNumber: {}", verifyNumber);
 
     if(verifyNumber.equals(setVerifyNumber)) {
 
@@ -103,7 +112,6 @@ public class UtilController {
       return ResponseEntity.ok("인증번호가 일치합니다.");
 
     }else{
-//      member.setVerifyEmail(false);
       session.setAttribute("VERIFY_NUMBER",false);
     }
 

@@ -11,12 +11,33 @@ let emailTimer; //이메일 타이머
 let timerFunc; //타이머 실행 함수
 let btnSignup; // 회원가입 버튼
 
+let loginIdMessage; // 로그인 아이디 중복 메세지
+let loginIdMessage2; // 로그인 아이디 길이 제한 메세지
+let fullNameMessage; // 이름 입력 메세지
+let passwordMessage; // 비밀번호 입력 메세지
+let passwordMessage2; // 비밀번호 길이 제한 메세지
+let verifyPasswordMessage; // 비밀번호 확인 입력 메세지
+let emailMessage; // 이메일 입력 메세지
+let emailCodeMessage; // 이메일 인증코드 입력 메세지
+let phoneMessage; // 전화번호 입력 메세지
+let birthdayMessage; // 생년월일 입력 메세지
+
 let isEmailVerified;
 
-const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i;
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+const loginIdRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{4,12}$/; // 로그인 아이디 정규식
 
 let btnSendEmail; //인증번호 발송 버튼
 let btnVerifyEmail; // 이메일 인증 확인 버튼
+
+//인풋란
+let loginIdInput;
+let fullNameInput;
+let passwordInput;
+let verifyPasswordInput;
+let emailInput;
+let phoneInput;
+let birthdayInput;
 
 // 이메일 인증 요청
 function sendEmail(email) {
@@ -48,17 +69,35 @@ function sendEmail(email) {
       return response.text();
     })
     .then(function (result) {
-      // console.log("result", result);
-      swal.fire({
-        title: result,
-        text: "해당 주소에서 인증번호를 확인해주세요.",
-        type: "success",
-      });
+      if (result === "인증번호가 발송되었습니다.") {
+        swal.fire({
+          title: result,
+          text: "해당 주소에서 인증번호를 확인해주세요.",
+          type: "success",
+        });
 
-      setTime(); // 타이머 시작
+        setTime(); // 타이머 시작
+      } else if (result === "이미 사용중인 이메일입니다.") {
+        swal.fire({
+          title: "이메일 전송 실패",
+          text: "이미 사용중인 이메일입니다.",
+          type: "error",
+        });
+      } else {
+        swal.fire({
+          title: "이메일 전송 실패",
+          text: "이메일 주소를 다시 확인해주세요",
+          type: "error",
+        });
+      }
     })
     .catch(function (error) {
       console.log("error", error);
+      swal.fire({
+        title: "이메일 전송 실패",
+        text: "다시 시도해주세요.",
+        type: "error",
+      });
     });
 }
 
@@ -78,18 +117,28 @@ function verifyEmail(emailCode) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        verifyNumber: emailCode,
+        emailCode: emailCode,
       }),
     })
     .then(function (response) {
       return response.text();
     })
     .then(function (result) {
-      swal.fire({
-        title: "인증 요청이 완료되었습니다.",
-        type: "success",
-      });
-      endTimer(timerFunc); //타이머 end
+      console.log("result", result);
+      if (result === "인증번호가 일치합니다.") {
+        swal.fire({
+          title: "인증 요청이 완료되었습니다.",
+          type: "success",
+        });
+        endTimer(timerFunc); //타이머 end
+        isEmailVerified = true; // 전역 이메일 확인여부 true로
+      } else {
+        swal.fire({
+          title: "인증 실패",
+          text: "인증번호를 다시 확인해주세요.",
+          type: "error",
+        });
+      }
     })
     .catch(function (error) {
       swal.fire({
@@ -131,72 +180,186 @@ function endTimer(timerFunc) {
 }
 
 function validateSignUp() {
-  let errorMessage = "";
-  if (loginId == null || loginId.trim() === "") {
-    document.getElementById("loginIdMessage").style.display = "block";
-    document.getElementById("loginIdMessage2").style.display = "none";
-  } else if (loginId.length < 4 || loginId.length > 10) {
-    document.getElementById("loginIdMessage2").style.display = "block";
-    document.getElementById("loginIdMessage").style.display = "none";
+  let isValid = false; // 유효성 검사 결과
+  let loginIdValid = false;
+  let fullNameValid = false;
+  let passwordValid = false;
+  let verifyPasswordValid = false;
+  let emailValid = false;
+  let phoneValid = false;
+  let birthdayValid = false;
+
+  loginId = document.getElementById("loginId").value.trim();
+  fullName = document.getElementById("fullName").value.trim();
+  password = document.getElementById("password").value.trim();
+  verifyPassword = document.getElementById("verifyPassword").value.trim();
+  email = document.getElementById("email").value.trim();
+  emailCodeInput = document.getElementById("emailCode"); // 이메일코드 인풋요소
+  emailCode = document.getElementById("emailCode").value.trim(); //이메일 코드값
+  phone = document.getElementById("phone").value.trim();
+  birthday = document.getElementById("birthday").value.trim();
+  emailTimer = document.getElementById("emailTimer"); //span
+  btnVerifyEmail = document.getElementById("btnVerifyEmail");
+  btnSignup = document.getElementById("btnSignup"); // 회원가입 버튼
+
+  if (loginId == null || loginId === "") {
+    loginIdMessage.style.display = "block";
+    loginIdMessage2.style.display = "none";
+    loginIdValid = false;
+  } else if (!loginIdRegex.test(loginId)) {
+    loginIdMessage2.style.display = "block";
+    loginIdMessage.style.display = "none";
+    loginIdValid = false;
   } else {
-    document.getElementById("loginIdMessage2").style.display = "none";
-    document.getElementById("loginIdMessage").style.display = "none";
+    loginIdMessage2.style.display = "none";
+    loginIdMessage.style.display = "none";
+    loginIdValid = true;
   }
 
-  if (fullName == null || fullName.trim() === "") {
-    document.getElementById("fullNameMessage").style.display = "block";
+  if (fullName == null || fullName === "") {
+    fullNameMessage.style.display = "block";
+    fullNameValid = false;
   } else {
-    document.getElementById("fullNameMessage").style.display = "none";
+    fullNameMessage.style.display = "none";
+    fullNameValid = true;
   }
-  if (password == null || password.trim() === "") {
-    errorMessage = "비밀번호를 입력해주세요\n";
+  if (password == null || password === "") {
+    passwordMessage.style.display = "block";
+    passwordMessage2.style.display = "none";
+    passwordValid = false;
+  } else if (password.length < 4 || password.length > 8) {
+    passwordMessage.style.display = "none";
+    passwordMessage2.style.display = "block";
+    passwordValid = false;
+  } else {
+    passwordMessage.style.display = "none";
+    passwordMessage2.style.display = "none";
+    passwordValid = true;
   }
-  if (verifyPassword == null || verifyPassword.trim() === "") {
-    errorMessage = "비밀번호 확인을 입력해주세요\n";
-  }
-  if (password.length < 4 || password.length > 10) {
-    errorMessage = "비밀번호는 4자 이상 10자 이하로 입력해주세요\n";
-  }
+
   if (password !== verifyPassword) {
-    errorMessage = "비밀번호가 일치하지 않습니다.\n";
+    verifyPasswordMessage.style.display = "block";
+    verifyPasswordValid = false;
+  } else {
+    verifyPasswordMessage.style.display = "none";
+    verifyPasswordValid = true;
   }
-  if (email == null || email.trim() === "") {
-    errorMessage = "이메일을 입력해주세요\n";
+  if (email == null || email === "") {
+    emailMessage.style.display = "block";
+    emailValid = false;
+  } else {
+    emailMessage.style.display = "none";
+    emailValid = true;
   }
-  if (phone == null || phone.trim() === "") {
-    errorMessage = "전화번호를 입력해주세요\n";
-  }
-  if (birthday == null || birthday.trim() === "") {
-    errorMessage = "생년월일을 입력해주세요\n";
-  }
-  if (emailCode == null || emailCode.trim() === "") {
-    errorMessage = "이메일 인증코드를 입력해주세요\n";
+
+  if (birthday == null || birthday === "") {
+    birthdayMessage.style.display = "block";
+    birthdayValid = false;
+  } else {
+    birthdayMessage.style.display = "none ";
+    birthdayValid = true;
   }
 
   if (!isEmailVerified) {
-    errorMessage = "이메일 인증을 완료해주세요.\n";
+    emailCodeMessage.style.display = "block";
+  } else {
+    emailCodeMessage.style.display = "none";
   }
-  if (errorMessage !== "") {
-    swal.fire({
-      title: "회원가입 실패",
-      text: errorMessage,
-      type: "error",
+
+  if (
+    loginIdValid &&
+    fullNameValid &&
+    passwordValid &&
+    verifyPasswordValid &&
+    emailValid &&
+    phoneValid &&
+    birthdayValid &&
+    isEmailVerified
+  ) {
+    isValid = true;
+  } else {
+    isValid = false;
+  }
+  if (isValid) {
+    btnSignup.disabled = true;
+    return true;
+  }
+  return false;
+}
+
+// 회원가입 요청
+function insertMembership() {
+  loginId = document.getElementById("loginId").value.trim();
+  password = document.getElementById("password").value.trim();
+  verifyPassword = document.getElementById("verifyPassword").value.trim();
+  email = document.getElementById("email").value.trim();
+  phone = document.getElementById("phone").value.trim();
+  birthday = document.getElementById("birthday").value.trim();
+  fullName = document.getElementById("fullName").value.trim();
+
+  // console.log("회원가입 성공");
+  window
+    .fetch("/login/valMembership", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        loginId: loginId,
+        fullName: fullName,
+        password: password,
+        verifyPassword: verifyPassword,
+        email: email,
+        phone: phone,
+        birthday: birthday,
+      }),
+    })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (result) {
+      swal.fire({
+        title: result.code === 200 ? "회원가입 성공" : "회원가입 실패",
+        text:
+          result.code === 200
+            ? "회원가입이 완료되었습니다. 로그인 창으로 이동합니다"
+            : "다시 시도해주세요",
+        type: result.success ? "success" : "error",
+      });
+      if (result.code === 200) {
+        setTimeOut(function () {
+          location.href = "/";
+        }, 2000);
+      }
+    })
+    .catch(function (error) {
+      swal.fire({
+        title: "회원가입 실패",
+        text: "다시 시도해주세요",
+        type: "error",
+      });
     });
-    return false;
-  }
-  return true;
+  swal
+    .fire({
+      title: "회원가입 성공",
+      text: "로그인 페이지로 이동합니다.",
+      type: "success",
+    })
+    .then(function () {
+      document.getElementById("signupForm").submit();
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  loginId = document.getElementById("loginId").value;
-  fullName = document.getElementById("fullName").value;
-  password = document.getElementById("password").value;
-  verifyPassword = document.getElementById("verifyPassword").value;
-  email = document.getElementById("email").value;
+  loginId = document.getElementById("loginId").value.trim();
+  fullName = document.getElementById("fullName").value.trim();
+  password = document.getElementById("password").value.trim();
+  verifyPassword = document.getElementById("verifyPassword").value.trim();
+  email = document.getElementById("email").value.trim();
   emailCodeInput = document.getElementById("emailCode"); // 이메일코드 인풋요소
-  emailCode = document.getElementById("emailCode").value; //이메일 코드값
-  phone = document.getElementById("phone").value;
-  birthday = document.getElementById("birthday").value;
+  emailCode = document.getElementById("emailCode").value.trim(); //이메일 코드값
+  phone = document.getElementById("phone").value.trim();
+  birthday = document.getElementById("birthday").value.trim();
   emailTimer = document.getElementById("emailTimer"); //span
   btnVerifyEmail = document.getElementById("btnVerifyEmail");
   btnSignup = document.getElementById("btnSignup"); // 회원가입 버튼
@@ -204,7 +367,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   btnSendEmail = document.getElementById("btnSendEmail");
 
-  // setTime();
+  loginIdMessage = document.getElementById("loginIdMessage"); // 로그인 아이디 중복 메세지
+  loginIdMessage2 = document.getElementById("loginIdMessage2"); // 로그인 아이디 길이 제한 메세지
+  fullNameMessage = document.getElementById("fullNameMessage"); // 이름 입력 메세지
+  passwordMessage = document.getElementById("passwordMessage"); // 비밀번호 입력 메세지
+  passwordMessage2 = document.getElementById("passwordMessage2"); // 비밀번호 길이 제한 메세지
+  verifyPasswordMessage = document.getElementById("verifyPasswordMessage"); // 비밀번호 확인 입력 메세지
+  emailMessage = document.getElementById("emailMessage"); // 이메일 입력 메세지
+  emailCodeMessage = document.getElementById("emailCodeMessage"); // 이메일 인증코드 입력 메세지
+  phoneMessage = document.getElementById("phoneMessage"); // 전화번호 입력 메세지
+  birthdayMessage = document.getElementById("birthdayMessage"); // 생년월일 입력 메세지
+
+  //인풋란
+  loginIdInput = document.getElementById("loginId");
+  fullNameInput = document.getElementById("fullName");
+  passwordInput = document.getElementById("password");
+  verifyPasswordInput = document.getElementById("verifyPassword");
+  emailInput = document.getElementById("email");
+  phoneInput = document.getElementById("phone");
+  birthdayInput = document.getElementById("birthday");
 
   // 이메일 전송 버튼 클릭
   btnSendEmail.addEventListener("click", function (e) {
@@ -220,45 +401,16 @@ document.addEventListener("DOMContentLoaded", function () {
     verifyEmail(String(emailCode));
   });
 
+  // 인풋창 변경 시 유효성 검사
+  document.querySelectorAll("input").forEach(function (input) {
+    input.addEventListener("change", function () {
+      validateSignUp();
+    });
+  });
+
   //회원가입
   btnSignup.addEventListener("click", function (e) {
     e.preventDefault();
-    loginId = document.getElementById("loginId").value;
-    password = document.getElementById("password").value;
-    verifyPassword = document.getElementById("verifyPassword").value;
-    email = document.getElementById("email").value;
-    phone = document.getElementById("phone").value;
-    birthday = document.getElementById("birthday").value;
-    fullName = document.getElementById("fullName").value;
-
-    if (validateSignUp()) {
-      // console.log("회원가입 성공");
-      window.fetch("/login/valMembership", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          loginId: loginId,
-          fullName: fullName,
-          password: password,
-          verifyPassword: verifyPassword,
-          email: email,
-          phone: phone,
-          birthday: birthday,
-        }),
-      });
-      swal
-        .fire({
-          title: "회원가입 성공",
-          text: "로그인 페이지로 이동합니다.",
-          type: "success",
-        })
-        .then(function () {
-          document.getElementById("signupForm").submit(); // 폼 제출
-        });
-    } else {
-      return; // 회원가입 실패 시, 폼 제출하지 않음
-    }
+    insertMembership();
   });
 });

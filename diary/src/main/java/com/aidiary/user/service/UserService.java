@@ -31,7 +31,6 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final Util util;
-//  private final SecurityConfig securityConfig;
   private final UserMapper userMapper;
   private final Logger log = LoggerFactory.getLogger(UserService.class);
   private final View error;
@@ -86,7 +85,7 @@ public class UserService {
 
     boolean valTest = false;
 
-    boolean emptyLoginId =  !(member.getLoginId() == null || member.getLoginId().isEmpty());
+    boolean emptyLoginId =  !(member.getLoginId() == null || member.getLoginId().isEmpty() || member.getLoginId().trim().equals(""));
     boolean notLoginIdMethod = false;
     boolean duplicateLoginId = false;
     boolean emptyPassword = !(member.getPassword() == null || member.getPassword().isEmpty());
@@ -95,10 +94,12 @@ public class UserService {
 
     boolean emptyEmail = !(member.getEmail() == null || member.getEmail().isEmpty());
     boolean isEmailVerify = (boolean) session.getAttribute("VERIFY_NUMBER");
+    boolean duplicateEmail = false; // 이메일 중복 검사
+
     boolean emptyFullName = !(member.getFullName() == null || member.getFullName().isEmpty());
 
     boolean emptyBirthday = member.getBirthday() != null;
-    boolean isBirthdayAge = false;
+    // boolean isBirthdayAge = false;
 
 
     if (!emptyLoginId)
@@ -106,42 +107,35 @@ public class UserService {
       // log.info("아이디를 입력해주세요.");
 
 
-    if(emptyLoginId){
-      if (!member.getLoginId().matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{8,12}$"))
-        throw new CustomException("아이디는 8자에서 12자 이상 영문자와 숫자를 혼합한 형태여야 합니다.");
-        //log.info("아이디는 8자에서 12자 이상 영문자와 숫자를 혼합한 형태여야 합니다.");
+      if (!member.getLoginId().matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]{4,12}$"))
+        throw new CustomException("아이디는 4자에서 12자 사이의 영문자와 숫자를 혼합한 형태여야 합니다.");
       else notLoginIdMethod = true;
-    }
+  
 
-    if(notLoginIdMethod){
       Optional<User> duplicateUser =  userRepository.findByLoginId(member.getLoginId());
       if(duplicateUser.isPresent())
         throw new CustomException("아이디가 중복됩니다.");
-        //log.info("아이디가 중복됩니다.");
       else duplicateLoginId = true;
-    }
+    
 
 
     if (!emptyPassword)
       throw new CustomException("비밀번호를 입력하세요.");
-      //log.info("비밀번호를 입력하세요.");
+  
 
 
-    if (emptyPassword){
       if(!(member.getPassword().length() >= 4 && member.getPassword().length() <=8))
         throw new CustomException("비밀번호는 4자이상 8자이하여야 합니다.");
         // log.info("비밀번호는 4자이상 8자이하여야 합니다.");
       else notPasswordMethod = true;
-    }
+  
 
 
-
-    if(notPasswordMethod){
       if(!member.getVerifyPassword().equals(member.getPassword()))
         throw new CustomException("비밀번호가 일치하지 않습니다.");
         //log.info("비밀번호가 일치하지 않습니다.");
       else verifyPassword = true;
-    }
+
 
     if(!emptyEmail){
       throw new CustomException("이메일을 입력해주세요.");
@@ -151,19 +145,26 @@ public class UserService {
 
     if(!isEmailVerify) throw new CustomException("이메일 인증을 진행해주세요.");
 
+    // 이메일 중복 검사
+    int emailCount = -1;
+    if(member.getEmail() != null && !member.getEmail().trim().equals("")){
+      emailCount = userMapper.checkEmailDuplicate(member.getEmail());
+    }
+    duplicateEmail = emailCount == 0;
+
     if(!emptyBirthday)
       throw new CustomException("생년월일을 입력해주세요.");
       //log.info("생년월일을 입력해주세요.");
 
-    if(emptyBirthday){
-      if(!LocalDate.now().minusYears(18).isAfter(member.getBirthday()))
-        throw new CustomException("만 18세 이상만 가입 가능합니다.");
-        //log.info("만 18세 이상만 가입 가능합니다.");
-      else isBirthdayAge = true;
-    }
+    // if(emptyBirthday){
+    //   if(!LocalDate.now().minusYears(18).isAfter(member.getBirthday()))
+    //     throw new CustomException("만 18세 이상만 가입 가능합니다.");
+    //     //log.info("만 18세 이상만 가입 가능합니다.");
+    //   else isBirthdayAge = true;
+    // }
 
 
-    if(emptyLoginId && notLoginIdMethod && duplicateLoginId && emptyPassword  && notPasswordMethod && verifyPassword && emptyEmail && isEmailVerify && emptyFullName && emptyBirthday && isBirthdayAge) {
+    if(emptyLoginId && notLoginIdMethod && duplicateLoginId && emptyPassword  && notPasswordMethod && verifyPassword && emptyEmail && isEmailVerify && duplicateEmail && emptyFullName && emptyBirthday) {
       valTest = true;
     };
 

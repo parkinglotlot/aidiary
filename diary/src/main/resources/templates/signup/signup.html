@@ -40,12 +40,13 @@
             <div class="signup-form-grid">
               <!-- 아이디 -->
               <div class="signup-field">
-                <label for="loginId">
+                <label for="loginId" class="label-area">
                   아이디 <span class="required">*</span
                   ><span class="red" id="loginIdMessage">
                     아이디를 등록해주세요.</span
-                  ><span class="red" id="loginIdMessage2">
-                    아이디는 4자 이상 10자 이하로 입력해주세요.</span
+                  ><span class="red" id="loginIdMessage2" style="display: none">
+                    아이디는 4자에서 12자 사이의 영문자와 숫자를 혼합한 형태로
+                    입력해주세요.</span
                   >
                 </label>
 
@@ -61,7 +62,7 @@
 
               <!-- 이름 -->
               <div class="signup-field">
-                <label for="fullName">
+                <label for="fullName" class="label-area">
                   이름 <span class="required">*</span>
                   <span class="red" id="fullNameMessage">
                     이름을 입력해주세요.</span
@@ -80,8 +81,14 @@
 
               <!-- 비밀번호 -->
               <div class="signup-field">
-                <label for="password">
+                <label for="password" class="label-area">
                   비밀번호 <span class="required">*</span>
+                  <span class="red" id="passwordMessage"
+                    >비밀번호를 입력해주세요.</span
+                  >
+                  <span class="red" id="passwordMessage2" style="display: none"
+                    >비밀번호는 4자 이상 8자 이하로 입력해주세요</span
+                  >
                 </label>
 
                 <input
@@ -96,9 +103,12 @@
 
               <!-- 비밀번호 확인 -->
               <div class="signup-field">
-                <label for="verifyPassword">
+                <label for="verifyPassword" class="label-area">
                   비밀번호 확인
                   <span class="required">*</span>
+                  <span class="red" id="verifyPasswordMessage"
+                    >비밀번호를 확인해주세요.</span
+                  >
                 </label>
 
                 <input
@@ -113,8 +123,11 @@
 
               <!-- 이메일 -->
               <div class="signup-field signup-field-wide">
-                <label for="email">
+                <label for="email" class="label-area">
                   이메일 <span class="required">*</span>
+                  <span class="red" id="emailMesssage"
+                    >이메일을 입력해주세요.</span
+                  >
                 </label>
 
                 <div class="signup-input-group">
@@ -148,9 +161,12 @@
                 class="signup-field signup-field-wide"
                 id="emailVerificationArea"
               >
-                <label for="emailCode">
+                <label for="emailCode" class="label-area">
                   이메일 인증번호
                   <span class="required">*</span>
+                  <span class="red" id="emailCodeMessage"
+                    >이메일 인증을 완료해주세요.</span
+                  >
                 </label>
 
                 <div class="signup-input-group">
@@ -194,7 +210,7 @@
 
               <!-- 전화번호 -->
               <div class="signup-field">
-                <label for="phone">전화번호</label>
+                <label for="phone" class="label-area">전화번호</label>
 
                 <input
                   id="phone"
@@ -207,8 +223,11 @@
 
               <!-- 생년월일 -->
               <div class="signup-field">
-                <label for="birthday">
+                <label for="birthday" class="label-area">
                   생년월일 <span class="required">*</span>
+                  <span class="red" id="birthdayMessage"
+                    >생년월일을 입력해주세요.</span
+                  >
                 </label>
 
                 <input id="birthday" name="birthday" type="date" required />

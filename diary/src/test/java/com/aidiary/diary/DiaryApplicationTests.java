@@ -638,6 +638,12 @@ class DiaryApplicationTests {
 			log.info("실패:{}",updateResult);
 		}
 	}
+	@Test 
+	void checkEmailDuplicate(){
+		String email = "gwang11167@naver.com";
+		int result = userMapper.checkEmailDuplicate(email);
+		log.info("이메일 중복 검사 결과:{}",result);
+	}
 
 
 

@@ -391,3 +391,12 @@ body {
 .red {
   color: red;
 }
+
+.label-area {
+  display: flex;
+  flex-wrap: nowrap; /* 줄바꿈 안 함 */
+}
+
+.label-area > span[class="red"] {
+  margin-right: 8px; /* 체크박스와 라벨 사이의 간격 */
+}
