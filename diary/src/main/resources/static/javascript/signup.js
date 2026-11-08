@@ -132,6 +132,7 @@ function verifyEmail(emailCode) {
         });
         endTimer(timerFunc); //타이머 end
         isEmailVerified = true; // 전역 이메일 확인여부 true로
+        validateSignUp(); // 유효성 검사
       } else {
         swal.fire({
           title: "인증 실패",
@@ -186,7 +187,6 @@ function validateSignUp() {
   let passwordValid = false;
   let verifyPasswordValid = false;
   let emailValid = false;
-  let phoneValid = false;
   let birthdayValid = false;
 
   loginId = document.getElementById("loginId").value.trim();
@@ -196,7 +196,6 @@ function validateSignUp() {
   email = document.getElementById("email").value.trim();
   emailCodeInput = document.getElementById("emailCode"); // 이메일코드 인풋요소
   emailCode = document.getElementById("emailCode").value.trim(); //이메일 코드값
-  phone = document.getElementById("phone").value.trim();
   birthday = document.getElementById("birthday").value.trim();
   emailTimer = document.getElementById("emailTimer"); //span
   btnVerifyEmail = document.getElementById("btnVerifyEmail");
@@ -272,7 +271,6 @@ function validateSignUp() {
     passwordValid &&
     verifyPasswordValid &&
     emailValid &&
-    phoneValid &&
     birthdayValid &&
     isEmailVerified
   ) {
@@ -281,7 +279,7 @@ function validateSignUp() {
     isValid = false;
   }
   if (isValid) {
-    btnSignup.disabled = true;
+    btnSignup.disabled = false;
     return true;
   }
   return false;
@@ -299,7 +297,7 @@ function insertMembership() {
 
   // console.log("회원가입 성공");
   window
-    .fetch("/login/valMembership", {
+    .fetch("/user/valMembership", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -314,39 +312,35 @@ function insertMembership() {
         birthday: birthday,
       }),
     })
-    .then(function (response) {
-      return response.json();
+    .then(async function (response) {
+      //json 데이터를 한 번만 읽기
+      const result = await response.json();
+      console.log("response", result);
+
+      if (!response.ok) {
+        throw new Error(result.message || "회원가입 요청 실패");
+      }
+      return result;
     })
     .then(function (result) {
       swal.fire({
-        title: result.code === 200 ? "회원가입 성공" : "회원가입 실패",
-        text:
-          result.code === 200
-            ? "회원가입이 완료되었습니다. 로그인 창으로 이동합니다"
-            : "다시 시도해주세요",
-        type: result.success ? "success" : "error",
+        title: "회원가입 성공",
+        text: "회원가입이 완료되었습니다. 로그인 창으로 이동합니다",
+        type: "success",
       });
       if (result.code === 200) {
-        setTimeOut(function () {
+        setTimeout(function () {
           location.href = "/";
         }, 2000);
       }
     })
     .catch(function (error) {
+      console.log("error", error);
       swal.fire({
         title: "회원가입 실패",
-        text: "다시 시도해주세요",
+        text: error.message,
         type: "error",
       });
-    });
-  swal
-    .fire({
-      title: "회원가입 성공",
-      text: "로그인 페이지로 이동합니다.",
-      type: "success",
-    })
-    .then(function () {
-      document.getElementById("signupForm").submit();
     });
 }
 

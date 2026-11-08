@@ -15,6 +15,7 @@ import com.aidiary.diary.dto.PageRequestDTO;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
+import com.aidiary.user.enumeration.Status;
 import com.aidiary.user.jpa.User;
 import com.aidiary.user.repository.UserRepository;
 import com.aidiary.user.util.Util;
@@ -24,6 +25,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+
+import com.aidiary.user.enumeration.Role;
+import com.aidiary.user.enumeration.Status;
 
 @Service
 @AllArgsConstructor
@@ -187,6 +191,9 @@ public class UserService {
     user.setEmail(member.getEmail());
     user.setBirthday(member.getBirthday());
     user.setFullName(member.getFullName());
+    user.setPhone(member.getPhone());
+    user.setRole(Role.USER);
+    user.setState(Status.ACTIVE);
     userRepository.save(user);
 
     Optional<User> isLoginUser = userRepository.findByLoginId(user.getLoginId());

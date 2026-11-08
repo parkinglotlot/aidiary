@@ -89,7 +89,7 @@ public class UserController {
         insertUser = userService.insertMember(member);
       } catch (Exception e) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        CustomResponseEntity customResponseEntity = new CustomResponseEntity(status.getReasonPhrase(),status.value(),null,status);
+        CustomResponseEntity customResponseEntity = new CustomResponseEntity(e.getMessage(),status.value(),null,status);
         throw new CustomException(customResponseEntity,status);
       }
 

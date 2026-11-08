@@ -49,8 +49,10 @@ public class AllExceptionHandlers {
   public ResponseEntity<CustomResponseEntity> exceptionRuntime(Exception e){
     HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     log.error("RuntimeException 발생: ", e);  // 스택트레이스 전체 출력
-    CustomException customException = new CustomException(new CustomResponseEntity(),httpStatus);
-    return customException.getResponseEntity();
+    HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+    CustomResponseEntity customresponseEntity = new CustomResponseEntity(e.getMessage(),status.value(),null,status);
+    // CustomException customException = new CustomException(new CustomResponseEntity(),httpStatus);
+    return ResponseEntity.status(status).body(customresponseEntity);
   }
 
 }
