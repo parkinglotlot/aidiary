@@ -60,8 +60,7 @@ public class UserService {
     //암호화
     String hashedPassword = util.encAES(password);
     List<User> loginUserList = userRepository.findByLoginIdAndPassword(loginId,hashedPassword);
-    if(loginUserList != null && !loginUserList.isEmpty()){
-      log.info("hashedPassword:{}",hashedPassword);
+    if(loginUserList != null && !loginUserList.isEmpty() && loginUserList.get(0).getState() != null && loginUserList.get(0).getState().toString().equals("ACTIVE")){
       return true;
     }
     return false;
@@ -203,8 +202,19 @@ public class UserService {
     return false;
   }
 
+  // 현재 유저 반환
+  public MemberShipDTO curUser(String loginId){
+    MemberShipDTO curUser;
+    try {
+      curUser = userMapper.selectUserByLoginId(loginId);
+    } catch (Exception e) {
 
- 
+      curUser = null;
+    }
+
+    return curUser;
+
+  }
 
 
 

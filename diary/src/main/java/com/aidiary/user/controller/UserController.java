@@ -56,8 +56,7 @@ public class UserController {
 
       String message = isLogin ? "Success" : "Fail";
       Object data = isLogin ? loginId : null;
-      log.info("isLogin:{}",isLogin);
-      log.info("data:{}",data);
+
 
       if(isLogin){
         userService.loginSession(request,loginId);

@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //searchKeyword  엔터
   searchKeyword.addEventListener("keypress", function (e) {
     if (e.key == "Enter") {
-      filter = searchKeyword.value;
+      filter = searchKeyword.value.trim();
       curPage = 1; // 검색 시 항상 1페이지부터 시작
       realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
       pagination.innerHTML = ""; //페이지네이션 초기화
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target && e.target.id === "btnSearch") {
       console.log("Click!!");
 
-      filter = searchKeyword.value;
+      filter = searchKeyword.value.trim();
       curPage = 1; // 검색 시 항상 1페이지부터 시작
       realDiaryList.innerHTML = ""; //다이어리 리스트 초기화
       pagination.innerHTML = ""; //페이지네이션 초기화

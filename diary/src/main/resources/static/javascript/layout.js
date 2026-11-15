@@ -2,16 +2,46 @@ let logoutBtn; //로그아웃 버튼
 let diaryMenus; //다이어리 메뉴
 let userAuth; //유저권한 메뉴 버튼
 let currentPath; //현재 메뉴 url
+let menuList; // menulist ul
+
+function getMenu() {
+  window
+    .fetch("/getMenu", {
+      method: "GET",
+    })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (result) {
+      console.log("result", result);
+      menuList.innerHTML = "";
+      let itemList = result.data;
+      itemList.forEach(function (item) {
+        let li = document.createElement("li");
+        li.classList.add("menu-item");
+        li.classList.add("diaryMenu");
+        li.dataset.menu = item.url;
+        li.innerHTML = item.name;
+        menuList.append(li);
+      });
+
+      // menuList.innerHTML
+    });
+}
 
 // 실제 실행 시점
 document.addEventListener("DOMContentLoaded", function () {
   logoutBtn = document.getElementById("logOutBtn");
+
+  menuList = document.getElementsByClassName("menu-list")[0]; // menulist ul
 
   diaryMenus = document.querySelectorAll(".diaryMenu");
 
   userAuth = document.getElementById("userAuth");
 
   currentPath = window.location.pathname;
+
+  getMenu();
 
   //현재 url에 따라 메뉴 active 적용
   document.querySelectorAll(".menu-item").forEach(function (menu) {
