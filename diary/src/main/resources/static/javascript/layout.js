@@ -4,6 +4,17 @@ let userAuth; //유저권한 메뉴 버튼
 let currentPath; //현재 메뉴 url
 let menuList; // menulist ul
 
+// 메뉴 활성화(선택된 메뉴)
+function activeMenu() {
+  document.querySelectorAll(".menu-item").forEach(function (menu) {
+    if (menu.dataset["menu"] === currentPath) {
+      menu.classList.add("active");
+    } else {
+      menu.classList.remove("active");
+    }
+  });
+}
+
 function getMenu() {
   window
     .fetch("/getMenu", {
@@ -24,8 +35,7 @@ function getMenu() {
         li.innerHTML = item.name;
         menuList.append(li);
       });
-
-      // menuList.innerHTML
+      activeMenu(); // 메뉴 활성화
     });
 }
 
@@ -42,15 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
   currentPath = window.location.pathname;
 
   getMenu();
-
-  //현재 url에 따라 메뉴 active 적용
-  document.querySelectorAll(".menu-item").forEach(function (menu) {
-    if (menu.dataset["menu"] === currentPath) {
-      menu.classList.add("active");
-    } else {
-      menu.classList.remove("active");
-    }
-  });
 
   logoutBtn.addEventListener("click", function () {
     window

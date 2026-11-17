@@ -1,5 +1,6 @@
 package com.aidiary.user.service;
 
+import java.lang.reflect.Member;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -56,14 +57,19 @@ public class UserService {
 //  }
 
   // 로그인 아이디와 비밀번호 비교
-  public boolean existsByLoginIdAndPassword(String loginId,String password)throws Exception{
+  public MemberShipDTO userByLoginIdAndPassword(String loginId,String password)throws Exception{
     //암호화
     String hashedPassword = util.encAES(password);
     List<User> loginUserList = userRepository.findByLoginIdAndPassword(loginId,hashedPassword);
+    MemberShipDTO member = null;
     if(loginUserList != null && !loginUserList.isEmpty() && loginUserList.get(0).getState() != null && loginUserList.get(0).getState().toString().equals("ACTIVE")){
-      return true;
+         member = MemberShipDTO.builder()
+      .loginId(loginId)
+      .role(loginUserList.get(0).getRole().toString())
+      .defaultUrl(loginUserList.get(0).getRole().toString().equalsIgnoreCase("ADMIN")? "/userAuth/userAuthAdmin" : "/diary/goHome")
+      .build();
     }
-    return false;
+    return member;
   }
 
   //로그인 세션 만들기

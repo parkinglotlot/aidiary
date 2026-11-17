@@ -26,4 +26,6 @@ public class MemberShipDTO {
   private String state;
   private String management;
 
+  private String defaultUrl;
+
 }

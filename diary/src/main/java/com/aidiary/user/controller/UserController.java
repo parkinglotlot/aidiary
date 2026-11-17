@@ -3,6 +3,7 @@ package com.aidiary.user.controller;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
+import com.aidiary.user.jpa.User;
 import com.aidiary.user.service.UserService;
 import com.aidiary.user.util.UtilService;
 import io.micrometer.common.lang.Nullable;
@@ -51,17 +52,17 @@ public class UserController {
     boolean isLogin = false;
 
     try {
-      isLogin = userService.existsByLoginIdAndPassword(loginId,passWord);
+      MemberShipDTO member = userService.userByLoginIdAndPassword(loginId,passWord);
+      isLogin = member != null;
       HttpStatus status = isLogin ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
 
       String message = isLogin ? "Success" : "Fail";
-      Object data = isLogin ? loginId : null;
 
 
       if(isLogin){
         userService.loginSession(request,loginId);
       }
-      return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),data,status));
+      return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),member,status));
 
     } catch (Exception e) {
       HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;

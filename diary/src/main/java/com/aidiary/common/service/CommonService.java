@@ -47,36 +47,25 @@ public class CommonService {
     }
 
     //2. 로그인 유저
-    boolean isLoginUser = sessionLoginId.equals(sessionLoginId);
+    boolean isLoginUser = sessionLoginId.equals(user.getLoginId());
     if(!isLoginUser) throw new CustomException(customResponse,httpStatusBadRequest);
   }
 
-  public User validateUserEmpty(String sessionLoginId) throws AuthenticationException {
+  public User validateUserEmpty(String sessionLoginId) {
 
 
 
     // 로그인 유저 존재 확인
-    // log.info("log2:{}",error);
-    // log.info("sessionLoginId:{}",sessionLoginId);
+
     User user = userRepository.getUserByLoginId(sessionLoginId);
-    // log.info("user:{}",user); //정상
-    // log.info("log3:{}",error);
 
-    //httpstatus 세팅
-//    HttpStatus httpStatusBadRequest = HttpStatus.BAD_REQUEST;
-//    HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
-
-    // log.info("log4:{}",error);
-
-    // log.info("user:{}",user);
-    // log.info("sessionLoginId:{}",sessionLoginId);
 
     if(user == null){
       HttpStatus serverError = HttpStatus.INTERNAL_SERVER_ERROR;
       throw new CustomException(new CustomResponseEntity(serverError.getReasonPhrase(),serverError.hashCode(),serverError,serverError),serverError);
     }
 
-    // log.info("log6:{}",error);
+
 
     return user;
 

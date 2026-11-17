@@ -13,7 +13,6 @@ import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
 import com.aidiary.user.service.UserService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
