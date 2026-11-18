@@ -36,7 +36,7 @@ public class CommonService {
 
     //httpstatus 세팅
     HttpStatus httpStatusBadRequest = HttpStatus.BAD_REQUEST;
-    HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
+    // HttpStatus httpStatusUnauthorized = HttpStatus.UNAUTHORIZED;
 
     //CustomResponseEntity 반환
     CustomResponseEntity customResponse = new CustomResponseEntity();

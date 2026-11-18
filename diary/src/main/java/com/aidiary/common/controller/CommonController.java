@@ -15,6 +15,7 @@ import com.aidiary.user.service.UserService;
 import org.slf4j.Logger;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -25,8 +26,12 @@ public class CommonController {
   private final Logger log = LoggerFactory.getLogger(CommonController.class);
 
   @GetMapping("/goHome")
-  public String goMain(){
-    return "main";
+  public String goMain(HttpServletRequest request){
+    HttpSession session = request.getSession();
+    String defaultUrl = (String)session.getAttribute("defaultUrl");
+
+    
+    return "redirect:" + defaultUrl;
   }
 
   @GetMapping ("/getMenu")

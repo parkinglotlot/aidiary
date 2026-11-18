@@ -73,13 +73,19 @@ public class UserService {
   }
 
   //로그인 세션 만들기
-  public void loginSession(HttpServletRequest request, String loginId){
+  public void loginSession(HttpServletRequest request, MemberShipDTO member){
     HttpSession session = request.getSession(true);
-    log.info("setlogin 중 : {}", loginId);
-    if(loginId != null) session.setAttribute("loginId",loginId);
-    String sessionId = session.getAttribute("loginId").toString();
-    log.info("setlogin 성공 : {}", sessionId);
-//    return session;
+    String loginId = member.getLoginId();
+    String defaultUrl = member.getDefaultUrl();
+    String role = member.getRole();
+   
+    if(loginId != null) {
+      // 로그인 유저에 맞는 세션 만들기
+      session.setAttribute("loginId", loginId);
+      session.setAttribute("defaultUrl", defaultUrl);
+      session.setAttribute("role", role);
+    }
+
   }
   
   //회원가입 시 유효성 검사

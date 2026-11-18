@@ -3,17 +3,16 @@ package com.aidiary.user.controller;
 import com.aidiary.user.dto.CustomException;
 import com.aidiary.user.dto.CustomResponseEntity;
 import com.aidiary.user.dto.MemberShipDTO;
-import com.aidiary.user.jpa.User;
+
 import com.aidiary.user.service.UserService;
-import com.aidiary.user.util.UtilService;
-import io.micrometer.common.lang.Nullable;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import java.util.Map;
-import jdk.jshell.spi.ExecutionControl;
-import jdk.jshell.spi.ExecutionControl.UserException;
+
+
 import lombok.AllArgsConstructor;
-import org.slf4j.ILoggerFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+
 
 @AllArgsConstructor
 @Controller
@@ -60,7 +59,7 @@ public class UserController {
 
 
       if(isLogin){
-        userService.loginSession(request,loginId);
+        userService.loginSession(request,member);
       }
       return ResponseEntity.status(status).body(new CustomResponseEntity(message,status.value(),member,status));
 

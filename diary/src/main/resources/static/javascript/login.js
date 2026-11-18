@@ -16,7 +16,7 @@ function login(loginId, password) {
         });
 
         setTimeout(function () {
-          location.href = response.data.defaultUrl;
+          window.location.href = "/goHome";
         }, 1500);
       }
     })
