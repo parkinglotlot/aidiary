@@ -11,7 +11,7 @@ public class MainController {
   @GetMapping("/")
   public String Main(HttpServletRequest request){
      HttpSession session = request.getSession();
-     if (session.getAttribute("loginId'") != null) return "main";
+     if (session.getAttribute("loginId'") != null && (String)session.getAttribute("defaultUrl") != null) return "redirect:" + (String)session.getAttribute("defaultUrl");
     return "login";
   }
 
